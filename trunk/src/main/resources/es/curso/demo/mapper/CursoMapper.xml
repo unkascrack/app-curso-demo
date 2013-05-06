@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="es.curso.demo.mapper.CursoMapper">
+
+	<resultMap id="CursoMap" type="Curso">
+		<id property="id" column="ID_TIPOACCESO"/>
+		<result property="tipo" column="DE_TIPOACCESO"/>		
+	</resultMap>
+
+	<select id="selectById" parameterType="String" resultMap="AccesoMap">
+		SELECT
+			ACCESO.CD_APLICACION CD_APLICACIONACCESO,
+			ACCESO.LG_ACCESOUSUARIONOLDAP,
+			ACCESO.LG_ACCESOSSO,						
+			
+			TIPOACCESO.ID_TIPOACCESO,
+			TIPOACCESO.DE_TIPOACCESO,
+			
+			AMBITO.ID_AMBITO,
+			AMBITO.CD_AMBITO,
+			AMBITO.DE_AMBITO,
+			
+			PERFIL.ID_PERFIL,	 
+			PERFIL.CD_PERFIL,
+			PERFIL.DE_PERFIL
+		FROM 
+			TBGGPE_APLICACIONACCESO ACCESO
+			INNER JOIN TBLGPE_TIPOACCESO TIPOACCESO ON ACCESO.ID_TIPOACCESO = TIPOACCESO.ID_TIPOACCESO
+			LEFT JOIN TBGCMN_AMBITO AMBITO ON ACCESO.ID_AMBITO = AMBITO.ID_AMBITO
+			LEFT JOIN TBGCMN_PERFIL PERFIL ON ACCESO.ID_PERFIL = PERFIL.ID_PERFIL 
+		WHERE
+			ACCESO.CD_APLICACION = #{idAcceso,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectCountPerfilUtilizadoById" parameterType="Long" resultType="Integer">
+		SELECT  
+			COUNT(ACCESO.ID_PERFIL)
+		FROM 
+			TBGGPE_APLICACIONACCESO ACCESO  
+		WHERE
+			ACCESO.ID_PERFIL = #{idPerfil,jdbcType=NUMERIC}
+	</select>	
+	
+	<insert id="insert" parameterType="Acceso">
+		INSERT INTO TBGGPE_APLICACIONACCESO
+		  (
+		    CD_APLICACION,
+		    ID_TIPOACCESO,
+		    ID_AMBITO,
+		    ID_PERFIL,
+		    LG_ACCESOUSUARIONOLDAP,
+		    LG_ACCESOSSO,
+		    ID_USU_ALTA,
+		    FE_USU_ALTA
+		  )
+		  VALUES
+		  (
+		    #{id},
+		    #{tipoAcceso.id},
+		    #{ambito.id,jdbcType=NUMERIC},
+		    #{perfil.id,jdbcType=NUMERIC},
+		    #{accesoUsuarioNoLDAP},
+		    #{accesoSSO},
+		    #{cdUsuarioAlta},
+			SYSTIMESTAMP
+		  )
+	</insert>
+	<update id="update" parameterType="Acceso">
+		UPDATE 
+			TBGGPE_APLICACIONACCESO 
+		SET 
+			ID_TIPOACCESO = #{tipoAcceso.id},
+		    ID_AMBITO = #{ambito.id,jdbcType=NUMERIC},
+		    ID_PERFIL = #{perfil.id,jdbcType=NUMERIC},
+		    LG_ACCESOUSUARIONOLDAP = #{accesoUsuarioNoLDAP},
+		    LG_ACCESOSSO = #{accesoSSO},
+		    ID_USU_MODIF = #{cdUsuarioModifica},
+			FE_USU_MODIF = SYSTIMESTAMP
+		WHERE 
+			CD_APLICACION = #{id,jdbcType=VARCHAR}
+	</update>
+</mapper>
