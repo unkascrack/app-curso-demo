@@ -10,6 +10,15 @@ public class Tutor implements Serializable {
     private String nombre;
     private String apellidos;
 
+    public Tutor() {
+        super();
+    }
+
+    public Tutor(final Long id) {
+        super();
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
