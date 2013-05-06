@@ -5,80 +5,106 @@
 <mapper namespace="es.curso.demo.mapper.CursoMapper">
 
 	<resultMap id="CursoMap" type="Curso">
-		<id property="id" column="ID_TIPOACCESO"/>
-		<result property="tipo" column="DE_TIPOACCESO"/>		
+		<id property="id" column="ID_CURSO"/>
+		<result property="activo" column="LG_ACTIVO"/>
+		<result property="titulo" column="DE_TITULO"/>
+		<result property="nivel" column="DE_NIVEL"/>
+		<result property="horas" column="NU_HORAS"/>
+		<association property="tutor" javaType="Tutor" resultMap="es.curso.demo.mapper.TutorMapper.TutorMap"/>
+	</resultMap>
+	
+	<resultMap id="TemarioCursoMap" type="Curso" extends="CursoMap">
+		<id property="id" column="ID_CURSO"/>
+		<result property="temario" column="BL_TEMARIO"/>
 	</resultMap>
 
-	<select id="selectById" parameterType="String" resultMap="AccesoMap">
-		SELECT
-			ACCESO.CD_APLICACION CD_APLICACIONACCESO,
-			ACCESO.LG_ACCESOUSUARIONOLDAP,
-			ACCESO.LG_ACCESOSSO,						
+	<select id="selectById" parameterType="Long" resultMap="TemarioCursoMap">
+		SELECT  
+			CURSO.ID_CURSO,
+			CURSO.LG_ACTIVO,
+			CURSO.DE_TITULO,
+			CURSO.DE_NIVEL,
+			CURSO.NU_HORAS,
+			CURSO.BL_TEMARIO,
 			
-			TIPOACCESO.ID_TIPOACCESO,
-			TIPOACCESO.DE_TIPOACCESO,
-			
-			AMBITO.ID_AMBITO,
-			AMBITO.CD_AMBITO,
-			AMBITO.DE_AMBITO,
-			
-			PERFIL.ID_PERFIL,	 
-			PERFIL.CD_PERFIL,
-			PERFIL.DE_PERFIL
+			TUTOR.ID_TUTOR,
+			TUTOR.DE_NOMBRE,
+			TUTOR.DE_APELLIDOS
 		FROM 
-			TBGGPE_APLICACIONACCESO ACCESO
-			INNER JOIN TBLGPE_TIPOACCESO TIPOACCESO ON ACCESO.ID_TIPOACCESO = TIPOACCESO.ID_TIPOACCESO
-			LEFT JOIN TBGCMN_AMBITO AMBITO ON ACCESO.ID_AMBITO = AMBITO.ID_AMBITO
-			LEFT JOIN TBGCMN_PERFIL PERFIL ON ACCESO.ID_PERFIL = PERFIL.ID_PERFIL 
+			TBG_CURSO CURSO
+			INNER JOIN TBG_TUTOR TUTOR ON CURSO.ID_TUTOR = TUTOR.ID_TUTOR
 		WHERE
-			ACCESO.CD_APLICACION = #{idAcceso,jdbcType=VARCHAR}
+			CURSO.ID_CURSO = #{value,jdbcType=NUMERIC}
 	</select>
 	
-	<select id="selectCountPerfilUtilizadoById" parameterType="Long" resultType="Integer">
+	<select id="selectCountByActivo" resultType="Integer">
 		SELECT  
-			COUNT(ACCESO.ID_PERFIL)
+			COUNT(ID_CURSO)
 		FROM 
-			TBGGPE_APLICACIONACCESO ACCESO  
+			TBG_CURSO  
 		WHERE
-			ACCESO.ID_PERFIL = #{idPerfil,jdbcType=NUMERIC}
-	</select>	
+			LG_ACTIVO = 1
+	</select>
+
+	<select id="selectByActivo" parameterType="map" resultMap="CursoMap">
+		SELECT  
+			CURSO.ID_CURSO,
+			CURSO.LG_ACTIVO,
+			CURSO.DE_TITULO,
+			CURSO.DE_NIVEL,
+			CURSO.NU_HORAS,
+			
+			TUTOR.ID_TUTOR,
+			TUTOR.DE_NOMBRE,
+			TUTOR.DE_APELLIDOS
+		FROM 
+			TBG_CURSO CURSO
+			INNER JOIN TBG_TUTOR TUTOR ON CURSO.ID_TUTOR = TUTOR.ID_TUTOR
+		WHERE
+			CURSO.LG_ACTIVO = 1
+	</select>
 	
-	<insert id="insert" parameterType="Acceso">
-		INSERT INTO TBGGPE_APLICACIONACCESO
+	<insert id="insert" parameterType="Curso">
+		<selectKey keyProperty="id" resultType="Long" order="BEFORE">
+			SELECT SEQ_CURSO.NEXTVAL FROM DUAL
+ 		</selectKey>
+		INSERT INTO TBG_CURSO
 		  (
-		    CD_APLICACION,
-		    ID_TIPOACCESO,
-		    ID_AMBITO,
-		    ID_PERFIL,
-		    LG_ACCESOUSUARIONOLDAP,
-		    LG_ACCESOSSO,
-		    ID_USU_ALTA,
-		    FE_USU_ALTA
+		    ID_CURSO,
+			LG_ACTIVO,
+			DE_TITULO,
+			DE_NIVEL,
+			NU_HORAS,
+			BL_TEMARIO,
+			ID_TUTOR
 		  )
 		  VALUES
 		  (
 		    #{id},
-		    #{tipoAcceso.id},
-		    #{ambito.id,jdbcType=NUMERIC},
-		    #{perfil.id,jdbcType=NUMERIC},
-		    #{accesoUsuarioNoLDAP},
-		    #{accesoSSO},
-		    #{cdUsuarioAlta},
-			SYSTIMESTAMP
+		    #{activo},
+		    #{titulo},
+		    #{nivel},
+		    #{horas},
+		    #{temario,jdbcType=BLOB},
+		    #{tutor.id}
 		  )
 	</insert>
-	<update id="update" parameterType="Acceso">
+	
+	<update id="update" parameterType="Curso">
 		UPDATE 
-			TBGGPE_APLICACIONACCESO 
-		SET 
-			ID_TIPOACCESO = #{tipoAcceso.id},
-		    ID_AMBITO = #{ambito.id,jdbcType=NUMERIC},
-		    ID_PERFIL = #{perfil.id,jdbcType=NUMERIC},
-		    LG_ACCESOUSUARIONOLDAP = #{accesoUsuarioNoLDAP},
-		    LG_ACCESOSSO = #{accesoSSO},
-		    ID_USU_MODIF = #{cdUsuarioModifica},
-			FE_USU_MODIF = SYSTIMESTAMP
+			TBG_CURSO 
+		SET
+			LG_ACTIVO = #{activo},
+			DE_TITULO = #{titulo},
+			DE_NIVEL = #{nivel},
+			NU_HORAS = #{horas},
+			BL_TEMARIO = #{temario,jdbcType=BLOB},
+			ID_TUTOR = #{tutor.id}
 		WHERE 
-			CD_APLICACION = #{id,jdbcType=VARCHAR}
+			ID_CURSO = #{id}
 	</update>
+	
+	<delete id="delete" parameterType="Long">
+		DELETE TBG_CURSO WHERE ID_CURSO = #{id}
+	</delete>
 </mapper>
