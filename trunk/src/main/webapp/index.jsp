@@ -49,7 +49,9 @@
 	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
-	window.App = Ember.Application.create();
+	App = Ember.Application.create({
+		LOG_TRANSITIONS: true
+	});
 
 	App.ApplicationController = Ember.Controller.extend({
 	  firstName: "Trek",
