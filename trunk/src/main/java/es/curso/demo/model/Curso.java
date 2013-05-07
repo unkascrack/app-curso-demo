@@ -2,17 +2,38 @@ package es.curso.demo.model;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class Curso implements Serializable {
 
     private static final long serialVersionUID = 7977276319395424712L;
 
     private Long id;
+
     private boolean activo = false;
+
+    @NotNull
     private Tutor tutor;
+
+    @NotNull
+    @Size(max = 100)
     private String titulo;
+
+    @NotNull
     private Nivel nivel;
+
+    @NotNull
+    @Min(0)
+    @Max(1000)
     private Integer horas;
-    private byte[] temario;
+
+    @Size(max = 250)
+    private String nombreTemario;
+
+    private byte[] contenidoTemario;
 
     public Long getId() {
         return id;
@@ -62,12 +83,20 @@ public class Curso implements Serializable {
         this.horas = horas;
     }
 
-    public byte[] getTemario() {
-        return temario;
+    public String getNombreTemario() {
+        return nombreTemario;
     }
 
-    public void setTemario(final byte[] temario) {
-        this.temario = temario;
+    public void setNombreTemario(final String nombreTemario) {
+        this.nombreTemario = nombreTemario;
+    }
+
+    public byte[] getContenidoTemario() {
+        return contenidoTemario;
+    }
+
+    public void setContenidoTemario(final byte[] contenidoTemario) {
+        this.contenidoTemario = contenidoTemario;
     }
 
     @Override

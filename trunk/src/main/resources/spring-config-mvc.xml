@@ -10,10 +10,15 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
 
+	<!-- busqueda de componentes Spring: @Controller -->
+	<context:component-scan base-package="es.curso.demo.web"/>
+
+	<!-- cargamos anotaciones mvc -->
 	<mvc:annotation-driven />
 	
 	<mvc:resources mapping="/resources/**" location="/resources/" />
-	
+
+	<!-- gestión de subida de archivos (upload) -->	
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="1000000"/>
 	</bean>

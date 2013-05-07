@@ -13,17 +13,11 @@
 	         			http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
 	         			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-	<!-- carga archivos de properties -->
-	<context:property-placeholder location="classpath*:*.properties"/>
-
 	<!-- busqueda de componentes Spring: @Component, @Repository y @Service -->
 	<context:component-scan base-package="es.curso.demo"/>
-
-	<!-- configuración datasource -->
-	<jdbc:embedded-database id="dataSource" type="HSQL">
-        <jdbc:script location="classpath:database/curso-schema.sql"/>
-        <jdbc:script location="classpath:database/curso-data.sql"/>
-	</jdbc:embedded-database>
+	
+	<!-- importamos configuracion spring datasource -->	
+	<import resource="classpath:spring-config-datasource.xml" />
 
 	<!-- configuración mybatis-spring -->	
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

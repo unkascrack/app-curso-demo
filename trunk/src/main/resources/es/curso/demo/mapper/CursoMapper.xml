@@ -10,22 +10,22 @@
 		<result property="titulo" column="DE_TITULO"/>
 		<result property="nivel" column="DE_NIVEL"/>
 		<result property="horas" column="NU_HORAS"/>
+		<result property="nombreTemario" column="DE_TEMARIO"/>
 		<association property="tutor" javaType="Tutor" resultMap="es.curso.demo.mapper.TutorMapper.TutorMap"/>
 	</resultMap>
 	
 	<resultMap id="TemarioCursoMap" type="Curso" extends="CursoMap">
-		<id property="id" column="ID_CURSO"/>
-		<result property="temario" column="BL_TEMARIO"/>
+		<result property="contenidoTemario" column="BL_TEMARIO"/>
 	</resultMap>
 
-	<select id="selectById" parameterType="Long" resultMap="TemarioCursoMap">
+	<select id="selectById" parameterType="Long" resultMap="CursoMap">
 		SELECT  
 			CURSO.ID_CURSO,
 			CURSO.LG_ACTIVO,
 			CURSO.DE_TITULO,
 			CURSO.DE_NIVEL,
 			CURSO.NU_HORAS,
-			CURSO.BL_TEMARIO,
+			CURSO.DE_TEMARIO,
 			
 			TUTOR.ID_TUTOR,
 			TUTOR.DE_NOMBRE,
@@ -33,6 +33,17 @@
 		FROM 
 			TBG_CURSO CURSO
 			INNER JOIN TBG_TUTOR TUTOR ON CURSO.ID_TUTOR = TUTOR.ID_TUTOR
+		WHERE
+			CURSO.ID_CURSO = #{value,jdbcType=NUMERIC}
+	</select>
+	
+	<select id="selectTemarioById" parameterType="Long" resultMap="TemarioCursoMap">
+		SELECT  
+			CURSO.ID_CURSO,
+			CURSO.DE_TEMARIO,
+			CURSO.BL_TEMARIO
+		FROM 
+			TBG_CURSO CURSO
 		WHERE
 			CURSO.ID_CURSO = #{value,jdbcType=NUMERIC}
 	</select>
@@ -53,6 +64,7 @@
 			CURSO.DE_TITULO,
 			CURSO.DE_NIVEL,
 			CURSO.NU_HORAS,
+			CURSO.DE_TEMARIO,
 			
 			TUTOR.ID_TUTOR,
 			TUTOR.DE_NOMBRE,
@@ -75,6 +87,7 @@
 			DE_TITULO,
 			DE_NIVEL,
 			NU_HORAS,
+			DE_TEMARIO,
 			BL_TEMARIO,
 			ID_TUTOR
 		  )
@@ -85,7 +98,8 @@
 		    #{titulo},
 		    #{nivel},
 		    #{horas},
-		    #{temario,jdbcType=BLOB},
+		    #{nombreTemario,jdbcType=VARCHAR},
+		    #{contenidoTemario,jdbcType=BLOB},
 		    #{tutor.id}
 		  )
 	</insert>
@@ -98,13 +112,14 @@
 			DE_TITULO = #{titulo},
 			DE_NIVEL = #{nivel},
 			NU_HORAS = #{horas},
-			BL_TEMARIO = #{temario,jdbcType=BLOB},
+			DE_TEMARIO = #{nombreTemario,jdbcType=BLOB},
+			BL_TEMARIO = #{contenidoTemario,jdbcType=BLOB},
 			ID_TUTOR = #{tutor.id}
 		WHERE 
 			ID_CURSO = #{id}
 	</update>
 	
-	<delete id="delete" parameterType="Long">
+	<delete id="delete" parameterType="Curso">
 		DELETE TBG_CURSO WHERE ID_CURSO = #{id}
 	</delete>
 </mapper>

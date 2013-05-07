@@ -14,18 +14,24 @@ public interface CursoMapper {
     Curso selectById(Long idCurso);
 
     /**
+     * @param idCurso
+     * @return
+     */
+    Curso selectTemarioById(Long idCurso);
+
+    /**
      * @return
      */
     Integer selectCountByActivo();
 
     /**
-     * @param firstResult
-     * @param maxResults
+     * @param page
+     * @param size
      * @param orderBy
      * @param orderType
      * @return
      */
-    List<Curso> selectByActivo(@Param("firstResult") int firstResult, @Param("maxResults") int maxResults,
+    List<Curso> selectByActivo(@Param("page") Integer page, @Param("size") Integer size,
             @Param("orderBy") String orderBy, @Param("orderType") boolean orderType);
 
     /**
