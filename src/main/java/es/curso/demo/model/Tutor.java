@@ -2,12 +2,20 @@ package es.curso.demo.model;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class Tutor implements Serializable {
 
     private static final long serialVersionUID = -923931513142989933L;
 
     private Long id;
+
+    @NotNull
+    @Size(max = 50)
     private String nombre;
+
+    @Size(max = 50)
     private String apellidos;
 
     public Tutor() {
@@ -41,17 +49,6 @@ public class Tutor implements Serializable {
 
     public void setApellidos(final String apellidos) {
         this.apellidos = apellidos;
-    }
-
-    public String getNombreCompleto() {
-        final StringBuilder builder = new StringBuilder();
-        if (nombre != null) {
-            builder.append(nombre).append(" ");
-        }
-        if (apellidos != null) {
-            builder.append(apellidos);
-        }
-        return builder.toString().trim();
     }
 
     @Override
