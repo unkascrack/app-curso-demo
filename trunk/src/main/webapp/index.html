@@ -1,6 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
 	<meta charset="utf-8">
 	<title>Ember Starter Kit</title>
@@ -8,41 +7,20 @@
 	<link rel="stylesheet" href="resources/css/style.css">
 </head>
 <body>
+	<script type="text/x-handlebars">
 	<header>
 		CATALOGO DE CURSOS
 	</header>
 
-	<script type="text/x-handlebars">
-		Hello, <strong>{{firstName}} {{lastName}}</strong>!
-    </script>
-
 	<div>
-		1: {{outlet}}
+		Hello, <strong>{{firstName}} {{lastName}}</strong>!
+		{{outlet}}
 	</div>
 
-	<script type="text/x-handlebars">
-  		<div>
-    		2: {{outlet}}
-  		</div>
-	</script>
-
-<script type="text/x-handlebars">	
-{{#each people}}
-  Hello, {{name}}!
-{{else}}
-  Sorry, nobody is here.
-{{/each}}
-</script>
-
-<script type="text/x-handlebars">	
-{{#if appplication}}
-  Hello, {{appplication.firstName}}!
-{{/if}}
-</script>
-	
 	<footer>
 		&copy;2013 Carlos Alonso González
 	</footer>
+	</script>
 	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
 	<script src="resources/js/libs/handlebars-1.0.0-rc.3.js"></script>
