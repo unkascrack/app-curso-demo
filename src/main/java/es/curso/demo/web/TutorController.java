@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.curso.demo.mapper.TutorMapper;
 import es.curso.demo.model.Tutor;
 
-@RequestMapping("/tutores")
+@RequestMapping("tutores")
 @Controller
 public class TutorController {
 
@@ -21,7 +21,7 @@ public class TutorController {
     /**
      * @return
      */
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<Tutor> list() {
         return tutorMapper.selectAll();
