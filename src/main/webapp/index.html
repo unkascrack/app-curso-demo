@@ -9,11 +9,16 @@
 <body>
 	<script type="text/x-handlebars">
 	<header>
-		CATALOGO DE CURSOS
+		<h1>CATALOGO DE CURSOS</h1>
+		<div class="navbar">
+			<ul class="nav">
+				<li>{{#linkTo 'cursos'}}Cursos{{/linkTo}}</li>
+				<li>{{#linkTo 'curso'}}Nuevo Curso{{/linkTo}}</li>
+			</ul>
+		</div>
 	</header>
 
 	<div>
-		Hello, <strong>{{firstName}} {{lastName}}</strong>!
 		{{outlet}}
 	</div>
 
@@ -22,19 +27,99 @@
 	</footer>
 	</script>
 	
+	<script type="text/x-handlebars" id="cursos">
+		<h2>LISTADO DE CURSOS</h2>
+		<ul>
+		{{#each model}}
+			<li>{{#linkTo 'curso'}} {{id}} {{activo}} - {{tutor}} - {{titulo}} - {{nivel}} - {{horas}} {{/linkTo}}</li>
+		{{/each}}
+		</ul>
+	</script>
+	
+	<script type="text/x-handlebars" id="curso">
+		EDICIÓN CURSO
+	</script>
+	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
 	<script src="resources/js/libs/handlebars-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
+	<script src="resources/js/libs/ember-data-latest.js"></script>
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
-	App = Ember.Application.create({
-		LOG_TRANSITIONS: true
-	});
+App = Ember.Application.create({
+	LOG_TRANSITIONS: true
+});
 
-	App.ApplicationController = Ember.Controller.extend({
-	  firstName: "Trek",
-	  lastName: "Glowacki"
-	});
+//route
+App.Router.map(function() {
+	this.resource('cursos'),
+	this.resource('curso')
+	//this.resource('curso', {path: 'curso_id'})
+});
+
+App.IndexRoute = Ember.Route.extend({
+	redirect: function() {
+		this.transitionTo('cursos');
+	}
+});
+
+App.CursosRoute = Ember.Route.extend({
+	model: function() {
+		return App.Curso.find();
+	}
+});
+
+//ember-data
+App.Store = DS.Store.extend({
+	revision: 12,
+	adapter: 'DS.FixtureAdapter'
+});
+
+//model
+App.Curso = DS.Model.extend({
+	activo: DS.attr('boolean'),
+	tutor: DS.attr('string'),
+	titulo: DS.attr('string'),
+	nivel: DS.attr('string'),
+	horas: DS.attr('number')
+});
+
+App.Curso.FIXTURES = 
+[
+	{
+		"id":1,
+		"activo":true,
+		"tutor":"Carlos",
+		"titulo":"Curso 1",
+		"nivel":"BASICO",
+		"horas":20
+	}, 
+	{
+		"id":2,
+		"activo":true,
+		"tutor":"Alonso González",
+		"titulo":"Curso 2",
+		"nivel":"INTERMEDIO",
+		"horas":40
+	},
+	{
+		"id":3,
+		"activo":true,
+		"tutor":"Perico",
+		"titulo":"Curso 3",
+		"nivel":"INTERMEDIO",
+		"horas":60
+	},
+	{
+		"id":4,
+		"activo":true,
+		"tutor":"Carlos",
+		"titulo":"Curso 3",
+		"nivel":"AVANZADO",
+		"horas":120
+	}
+];
+
 	</script>
 </body>
 </html>
