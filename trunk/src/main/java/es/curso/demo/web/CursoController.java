@@ -16,14 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.curso.demo.mapper.CursoMapper;
 import es.curso.demo.model.Curso;
 
-@RequestMapping("/cursos")
+@RequestMapping("cursos")
 @Controller
 public class CursoController {
 
     @Autowired
     private transient CursoMapper cursoMapper;
 
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public List<Curso> list(@RequestParam(defaultValue = "1") final Integer page,
             @RequestParam(defaultValue = "10") final Integer size,
@@ -32,15 +32,9 @@ public class CursoController {
         return cursoMapper.selectByActivo(page, size, orderBy, orderType);
     }
 
-    @RequestMapping(value = "/get/{id}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "get/{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Curso getById(@PathVariable final Long id) {
-        return cursoMapper.selectById(id);
-    }
-
-    @RequestMapping(value = "/get", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public Curso getByIdParam(@RequestParam final Long id) {
         return cursoMapper.selectById(id);
     }
 

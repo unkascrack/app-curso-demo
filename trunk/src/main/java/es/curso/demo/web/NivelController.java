@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.curso.demo.model.Nivel;
 
-@RequestMapping("/niveles")
+@RequestMapping("niveles")
 @Controller
 public class NivelController {
 
