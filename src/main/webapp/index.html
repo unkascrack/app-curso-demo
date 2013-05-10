@@ -8,36 +8,105 @@
 </head>
 <body>
 	<script type="text/x-handlebars">
-	<header>
-		<h1>CATALOGO DE CURSOS</h1>
-		<div class="navbar">
-			<ul class="nav">
-				<li>{{#linkTo 'cursos'}}Cursos{{/linkTo}}</li>
-				<li>{{#linkTo 'curso'}}Nuevo Curso{{/linkTo}}</li>
-			</ul>
-		</div>
-	</header>
+    	{{partial 'header'}}
+    	{{outlet}}   
+    	{{partial 'footer'}}
+	</script>
+	
 
-	<div>
-		{{outlet}}
-	</div>
+	<script type="text/x-handlebars" data-template-name="header">
+		<header>
+			<h1>Catálogo de Cursos</h1>
+			<div class="navbar">
+				<ul class="nav">
+					<li>{{#linkTo 'cursos'}}Cursos{{/linkTo}}</li>
+					<li>{{#linkTo 'curso'}}Nuevo Curso{{/linkTo}}</li>
+				</ul>
+			</div>
+		</header>
+		<hr/>
+	</script>
 
-	<footer>
-		&copy;2013 Carlos Alonso González
-	</footer>
+	<script type="text/x-handlebars" data-template-name="footer">
+		<hr/>
+		<footer>
+			&copy;2013 Carlos Alonso González
+		</footer>
 	</script>
 	
 	<script type="text/x-handlebars" id="cursos">
 		<h2>LISTADO DE CURSOS</h2>
-		<ul>
-		{{#each model}}
-			<li>{{#linkTo 'curso'}} {{id}} {{activo}} - {{tutor}} - {{titulo}} - {{nivel}} - {{horas}} {{/linkTo}}</li>
-		{{/each}}
-		</ul>
+
+		{{#linkTo 'curso'}}Nuevo Curso{{/linkTo}}
+		<center>
+
+		<table border="1" cellspacing="0" cellpadding="0" width="80%">
+			<thead>
+				<tr>
+					<th width="20"></th>
+					<th>Titulo</th>
+					<th width="100">Nivel</th>
+					<th width="50">Horas</th>
+					<th width="50"></th>
+				</tr>
+			</thead>
+			<tbody>
+				{{#unless model}}
+					<tr>
+						<td colspan="5" align="center">No hay ningún curso activo</td>
+					</tr>
+				{{else}}
+					{{#each model}}
+						<tr>
+							<td>{{id}}</td>
+							<td>{{titulo}}</td>
+							<td>{{nivel}}</td>
+							<td>{{horas}}</td>
+							<td>{{#linkTo 'cursos.curso' this}}edit{{/linkTo}}</td>
+						</tr>
+					{{/each}}
+				{{/unless}}				
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="5">footer</td>
+				</tr>
+			</tfoot>
+		</table>
+		</center>
 	</script>
 	
 	<script type="text/x-handlebars" id="curso">
-		EDICIÓN CURSO
+		<h2>EDICIÓN CURSO</h2>
+
+		<label>Activo:</label>
+  		{{view Ember.Checkbox checkedBinding="content.activo"}}
+		<br/>
+		<label>Profesor</label>
+		{{view Ember.Select viewName="select"
+                    contentBinding="App.TutorController"
+                    optionLabelPath="content.nombreCompleto"
+                    optionValuePath="content.id"
+                    prompt="Seleccione un tutor:"
+                    selectionBinding="App.selectedTutorController.tutor"
+		}}
+		<br/>
+		<label>Titulo</label>
+		<input type="text"/>
+		<br/>
+		<label>Nivel</label>
+		{{view Ember.Select viewName="select"
+                    contentBinding="App.NivelController"
+                    optionLabelPath="content.nivel"
+                    optionValuePath="content.nivel"
+                    prompt="Seleccione el nivel"
+                    selectionBinding="App.selectedNivelController.tutor"
+		}}
+		<br/>
+		<label>Horas</label>
+		<input type="text"/>
+		<br/>
+		<input type="button" value="Añadir"/> <input type="button" value="Cancelar"/>
 	</script>
 	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
@@ -52,8 +121,10 @@ App = Ember.Application.create({
 
 //route
 App.Router.map(function() {
-	this.resource('cursos'),
-	this.resource('curso')
+    this.resource('cursos', function() {
+        this.route('curso', {path: 'curso/:curso_id'})
+    }),
+    this.resource('curso')
 	//this.resource('curso', {path: 'curso_id'})
 });
 
@@ -69,19 +140,59 @@ App.CursosRoute = Ember.Route.extend({
 	}
 });
 
+App.CursoRoute = Ember.Route.extend({
+	tutores: function() {
+		return App.Tutor.find();
+	},
+	niveles: function() {
+		return ['BASICO', 'INTERMEDIO', 'AVANZADO'];
+	}
+});
+
+/*
+App.CursosController = Ember.ArrayController.extend();
+App.CursoController = Ember.ArrayController.extend();
+
+App.CursoController = Ember.ObjectController.extend({
+	isEditing: false,
+
+	edit: function() {
+		this.set('isEditing', true);
+	},
+
+	remove: function() {
+		var curso = this.get('model');
+		curso.deleteRecord();
+		curso.get('store').commit();
+	}
+});
+*/
+
 //ember-data
 App.Store = DS.Store.extend({
 	revision: 12,
 	adapter: 'DS.FixtureAdapter'
+	//adapter: 'DS.RESTAdapter'
 });
 
 //model
+App.Tutor = DS.Model.extend({
+	nombre: DS.attr('string'),
+	apellidos: DS.attr('string'),
+	nombreCompleto: function() {
+		return this.get('nombre') + ' ' + this.get('apellidos');
+	}.property('nombre', 'apellidos')
+});
+
 App.Curso = DS.Model.extend({
 	activo: DS.attr('boolean'),
-	tutor: DS.attr('string'),
+	tutor: DS.belongsTo('App.Tutor'),
 	titulo: DS.attr('string'),
 	nivel: DS.attr('string'),
-	horas: DS.attr('number')
+	horas: DS.attr('number'),
+	plain: function () {
+        return this.get('id') + ' '+ this.get('activo');
+    }.property('activo')
 });
 
 App.Curso.FIXTURES = 
@@ -89,37 +200,77 @@ App.Curso.FIXTURES =
 	{
 		"id":1,
 		"activo":true,
-		"tutor":"Carlos",
+		"tutor":
+			{
+			"id":1,
+			"nombre":"Carlos",
+			"apellidos":"Alonso González"
+			},
 		"titulo":"Curso 1",
 		"nivel":"BASICO",
-		"horas":20
-	}, 
+		"horas":20,
+		"nombreTemario":null,
+		"contenidoTemario":null
+	},
 	{
 		"id":2,
 		"activo":true,
-		"tutor":"Alonso González",
+		"tutor":
+			{
+			"id":1,
+			"nombre":"Carlos",
+			"apellidos":"Alonso González"
+			},
 		"titulo":"Curso 2",
 		"nivel":"INTERMEDIO",
-		"horas":40
+		"horas":40,
+		"nombreTemario":null,
+		"contenidoTemario":null
 	},
 	{
 		"id":3,
 		"activo":true,
-		"tutor":"Perico",
+		"tutor":
+			{
+			"id":2,
+			"nombre":"Perico",
+			"apellidos":"Palotes"
+			},
 		"titulo":"Curso 3",
 		"nivel":"INTERMEDIO",
-		"horas":60
+		"horas":60,
+		"nombreTemario":null,
+		"contenidoTemario":null
 	},
 	{
 		"id":4,
 		"activo":true,
-		"tutor":"Carlos",
+		"tutor": {
+			"id":2,
+			"nombre":"Perico",
+			"apellidos":"Palotes"
+			},
 		"titulo":"Curso 3",
 		"nivel":"AVANZADO",
-		"horas":120
+		"horas":120,
+		"nombreTemario":null,
+		"contenidoTemario":null
 	}
 ];
 
+App.Tutor.FIXTURES = 
+[
+	{
+		"id":1,
+		"nombre":"Carlos",
+		"apellidos":"Alonso González"
+	},
+	{
+		"id":2,
+		"nombre":"Perico",
+		"apellidos":"Palotes"
+	}
+];
 	</script>
 </body>
 </html>
