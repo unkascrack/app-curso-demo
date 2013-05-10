@@ -57,7 +57,7 @@
 							<td>{{nivel}}</td>
 							<td>{{horas}}</td>
 							<td>
-								{{#linkTo cursos.show this}}Consultar{{/linkTo}}|{{#linkTo cursos.edit this}}Editar{{/linkTo}}
+								{{#linkTo cursos.edit this}}Editar{{/linkTo}}
 							</td>
 						</tr>
 					{{/each}}
@@ -74,47 +74,41 @@
 	
 	<script type="text/x-handlebars" data-template-name="cursos/edit">
 		<h2>EDICIÓN CURSO</h2>
-		<p><label>Activo</label>{{view Ember.Checkbox  checkedBinding='activo'}}</p>
-
-		<p><label>Titulo</label>{{view Ember.TextField valueBinding='titulo'}}</p>
-
-		<p><label>Horas</label>{{view Ember.TextField valueBinding='horas'}}</p>
-
 		<p>
-			<button {{action 'save'}}>Guardar</button>
-			<button {{action 'cancel'}}>Cancelar</button>
+			<label>Activo</label>
+			{{view Ember.Checkbox checkedBinding='activo'}}
 		</p>
-	</script>
-	
-	<script type="text/x-handlebars" data-template-name="copy">
-		<h2>EDICIÓN CURSO</h2>
-		<p><label>Activo</label>{{view Ember.Checkbox  checkedBinding='activo'}}</p>
 
 		<p>
 			<label>Profesor</label>
-			{{view Ember.Select viewName="select"
-                    contentBinding="App.TutorController"
-                    optionLabelPath="content.nombreCompleto"
-                    optionValuePath="content.id"
-                    prompt="Seleccione un tutor:"
-                    selectionBinding="App.selectedTutorController.tutor"
+			{{view Ember.Select
+                    contentBinding='controller.tutores'
+					optionValuePath='content.id'
+  					optionLabelPath='content.nombreCompleto'
+					valueBinding='tutor.id'
+                    prompt='Seleccione un tutor'
 			}}
 		</p>
 
-		<p><label>Titulo</label>{{view Ember.TextField valueBinding='titulo'}}</p>
+		<p>
+			<label>Titulo</label>
+			{{view Ember.TextField 
+				valueBinding='titulo'}}
+		</p>
 
 		<p>
 			<label>Nivel</label>
-			{{view Ember.Select viewName="select"
-                    contentBinding="App.NivelController"
-                    optionLabelPath="content.nivel"
-                    optionValuePath="content.nivel"
-                    prompt="Seleccione el nivel"
-                    selectionBinding="App.selectedNivelController.tutor"
+			{{view Ember.Select 
+					contentBinding='App.niveles'
+					valueBinding='nivel'
+                    prompt='Seleccione el nivel'
 			}}
 		</p>
 
-		<p><label>Horas</label>{{view Ember.TextField valueBinding='horas'}}</p>
+		<p>
+			<label>Horas</label>
+			{{view Ember.TextField valueBinding='horas'}}
+		</p>
 
 		<p>
 			<button {{action 'save'}}>Guardar</button>
@@ -136,7 +130,6 @@ App = Ember.Application.create({
 App.Router.map(function() {
 	this.resource('cursos', { path: '/cursos' }, function() {
 		this.route('new', { path: 'new' }),
-	    this.route('show', { path: ':curso_id' }),
 	    this.route('edit', { path: ':curso_id/edit' })
 	})
 });
@@ -159,20 +152,24 @@ App.CursosRoute = Ember.Route.extend({
 App.CursosNewRoute = Ember.Route.extend({
 	renderTemplate:function(){
 		this.render('cursos/edit', {into:'application'});
-	}
-});
-
-App.CursosShowRoute = Ember.Route.extend({
-	renderTemplate:function(){
-		this.render('cursos/edit', {into:'application'});
+	},
+	setupController:function(controller,model) {
+	       this._super(controller,model);
+	       controller.set('tutores', App.Tutor.find());
 	}
 });
 
 App.CursosEditRoute = Ember.Route.extend({
 	renderTemplate:function(){
 		this.render('cursos/edit', {into:'application'});
+	},
+	setupController:function(controller,model) {
+	       this._super(controller,model);
+	       controller.set('tutores', App.Tutor.find());
 	}
 });
+
+App.niveles = ['BASICO', 'INTERMEDIO', 'AVANZADO'];
 
 //ember-data
 App.Store = DS.Store.extend({
@@ -206,12 +203,7 @@ App.Curso.FIXTURES =
 	{
 		"id":1,
 		"activo":true,
-		"tutor":
-			{
-			"id":1,
-			"nombre":"Carlos",
-			"apellidos":"Alonso González"
-			},
+		"tutor": 1,
 		"titulo":"Curso 1",
 		"nivel":"BASICO",
 		"horas":20,
@@ -221,12 +213,7 @@ App.Curso.FIXTURES =
 	{
 		"id":2,
 		"activo":true,
-		"tutor":
-			{
-			"id":1,
-			"nombre":"Carlos",
-			"apellidos":"Alonso González"
-			},
+		"tutor": 1,
 		"titulo":"Curso 2",
 		"nivel":"INTERMEDIO",
 		"horas":40,
@@ -236,12 +223,7 @@ App.Curso.FIXTURES =
 	{
 		"id":3,
 		"activo":true,
-		"tutor":
-			{
-			"id":2,
-			"nombre":"Perico",
-			"apellidos":"Palotes"
-			},
+		"tutor": 1,
 		"titulo":"Curso 3",
 		"nivel":"INTERMEDIO",
 		"horas":60,
@@ -251,11 +233,7 @@ App.Curso.FIXTURES =
 	{
 		"id":4,
 		"activo":true,
-		"tutor": {
-			"id":2,
-			"nombre":"Perico",
-			"apellidos":"Palotes"
-			},
+		"tutor": [2],
 		"titulo":"Curso 3",
 		"nivel":"AVANZADO",
 		"horas":120,
