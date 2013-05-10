@@ -1,0 +1,285 @@
+http://jsfiddle.net/schawaska/dWcUp/
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+</head>
+<body>
+
+<script type="text/x-handlebars" data-template-name="application">
+    {{partial 'navbar'}}
+    {{outlet}}   
+    {{partial 'footer'}}
+</script>
+
+<script type="text/x-handlebars" data-template-name="_navbar">
+    <div class="navbar navbar-inverse">
+        <div class="navbar-inner">
+            {{#linkTo "app" class="brand"}}{{unbound App.app_title}}{{/linkTo}}
+            <ul class="nav">
+                <li class="divider-vertical">
+                    {{#linkTo "app"}}Home{{/linkTo}}
+                </li>
+                <li class="divider-vertical">
+                    {{#linkTo "products"}}Products{{/linkTo}}
+                </li>
+            </ul>
+        </div>
+    </div>
+</script>
+
+<script type="text/x-handlebars" data-template-name="_footer">
+    <div class="row">
+        <div class="span12">
+            &copy; 2013:1.0-pre4 - {{unbound App.contact}} 
+        </div>
+    </div>    
+</script>
+
+<script type="text/x-handlebars" data-template-name="app">
+    <h2>Home</h2>
+    <p>Bacon ipsum dolor sit amet tenderloin short ribs short loin meatball sausage chicken pastrami. Hamburger sausage tri-tip, bacon spare ribs bresaola short ribs chuck frankfurter shoulder. Fatback pork belly turducken, ham drumstick salami hamburger pork sausage. Jowl corned beef andouille shank boudin. Shankle salami corned beef, pastrami leberkas turducken venison shoulder fatback jowl ball tip ground round biltong andouille boudin.</p>
+    <p>Biltong boudin turkey rump shankle ball tip, strip steak drumstick spare ribs. Cow short ribs leberkas swine sirloin shank drumstick rump hamburger frankfurter ham hock. Bresaola turkey bacon prosciutto salami jowl pancetta meatloaf ground round ball tip filet mignon kielbasa tongue chuck strip steak. T-bone leberkas beef ribs kielbasa shankle pork chop spare ribs chuck strip steak shoulder frankfurter turducken. Pork loin ham cow chicken boudin venison. Filet mignon cow jowl pig ball tip, meatball boudin leberkas ham short loin drumstick tenderloin venison chicken. Chuck beef filet mignon capicola shankle, fatback flank ham hock corned beef meatloaf short ribs bacon.</p>
+</script>
+
+<script type="text/x-handlebars" data-template-name="categories">
+    <h2>Categories</h2>
+    <p>Listing available products and services</p>
+    <ul class="thumbnails">
+    {{#each category in controller}}
+        <li class="span3">
+            <div class="thumbnail">
+                <h4>{{category.name}}</h4>
+                <img {{bindAttr src="category.imageUrl" alt="category.name"}} />
+                {{#linkTo "products.category" category class="btn"}}
+                    Details
+                {{/linkTo}}
+            </div>
+        </li>
+    {{else}}
+        <li>Loading...</li>
+    {{/each}}
+    </ul>
+    <hr />
+</script>
+
+<script type="text/x-handlebars" data-template-name="products">
+    {{render categories}}
+    {{outlet}}
+</script>
+
+<script type="text/x-handlebars" data-template-name="products/index">
+    <h2>Products</h2>
+    <ul class="thumbnails">
+    {{#each product in controller}}
+        <li class="span3">
+            <div class="thumbnail">
+                <h4>{{product.name}}</h4>
+                <img {{bindAttr src="product.imageUrl" alt="product.name"}} />
+                {{#linkTo "products.product" product class="btn"}}
+                    Details
+                {{/linkTo}}
+            </div>
+        </li>
+    {{else}}
+        <li>Loading...</li>
+    {{/each}}
+    </ul>
+</script>
+
+<script type="text/x-handlebars" data-template-name="products/product">
+    <h4><em style="color: gray">Products</em>/<em style="color: gray">Category: {{category.name}}</em>/{{name}}</h4><br />
+    <img {{bindAttr src="imageUrl" alt="name"}}/>
+    $ {{price}} hahahahaha
+</script>
+
+<script type="text/x-handlebars" data-template-name="products/category">
+    <h2>{{name}}</h2>
+</script>
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="https://raw.github.com/wycats/handlebars.js/1.0.rc.2/dist/handlebars.js"></script>
+<script type="text/javascript" src="https://raw.github.com/emberjs/ember.js/release-builds/ember-1.0.0-pre.4.js"></script>
+<script type="text/javascript" src="https://raw.github.com/MilkyWayJoe/ember.js/master/ember.min.js"></script>
+
+
+var BaseApp = Em.Application.extend({
+    app_title: 'Auto Web Shop',
+    contact: function() {
+        if(this.get('link') !== '') {
+            var html = '<a href="%@" target="_blank">%@</a>'
+                       .fmt(this.get('link'), this.get('author'));
+            return new Handlebars.SafeString(html);
+        } else {
+            return this.get('author');
+        }
+    }.property('author', 'link') 
+});
+
+// Extensions - End
+
+window.App = BaseApp.create({
+    author: 'Your Name Here',
+    link: 'https://twitter.com/torontoemberjs'
+});
+
+// Controllers - Begin
+
+App.ShopController = Em.ArrayController.extend();
+App.ProductsController = Em.ArrayController.extend();
+App.ProductsIndexController = Em.ArrayController.extend();
+App.CategoriesController = Em.ArrayController.extend();
+
+// Controllers - End
+
+// Routes - Begin
+
+App.Router.map(function() {
+    this.resource('app');
+    this.resource('products', function() {
+        this.route('product', {path: 'product/:product_id'});
+        this.route('category', {path: 'category/:category_id'})
+    });
+});
+
+App.ApplicationRoute = Em.Route.extend({
+  setupController: function() {
+      this.controllerFor('categories').set('model', App.Category.find());
+  }
+});
+
+App.ProductsIndexRoute = Em.Route.extend({
+    model: function() {
+        return App.Product.find();
+    }
+});
+
+App.IndexRoute = Em.Route.extend({
+    redirect: function() {
+        this.transitionTo('app');   
+    }
+});
+
+// Routes - End
+
+// Models - Begin
+
+// Defining a Data Store for the application from DS namespace
+App.Store = DS.Store.extend({
+    // Until Ember reaches 1.0, Ember-Data will use a revisions to 
+    // alert developers about breaking changes to the API. At the time I'm 
+    // writing this, Ember-Data is on revision 11. To find out more, go to:
+    // https://github.com/emberjs/data/blob/master/BREAKING_CHANGES.md
+    revision: 11,
+    // Define your adapter. The Adapter is responsible to 'translate' the data from
+    // your backend API into what Ember-Data needs in order for it to work. Ember-Data
+    // comes with a REST Adapter and a Fixture Adapter, the later is very useful for 
+    // debugging and for mocking up an application. This example uses the Fixture Adapter
+    adapter: 'DS.FixtureAdapter'
+});
+
+App.Category = DS.Model.extend({
+    name: DS.attr('string'),    
+    imageUrl: DS.attr('string'),
+    products: DS.hasMany('App.Product')
+});
+
+App.Product = DS.Model.extend({
+    name: DS.attr('string'),
+    imageUrl: DS.attr('string'),
+    price: DS.attr('number'),
+    category: DS.belongsTo('App.Category')
+});
+
+// Loading sample data
+// Note that all fixtures have an `id` property. That's because Ember-Data needs your 
+// models to have an Id, but you don't define it on your model classes.
+App.Category.FIXTURES = [
+    {
+        id: 1, 
+        name: 'Air Conditioners', 
+        imageUrl: 'http://img9.imageshack.us/img9/1207/howtoreplaceyourcarairc.jpg', 
+        products: []
+    },
+    {    
+        id: 2,
+        name: 'Tires', 
+        imageUrl: 'http://img526.imageshack.us/img526/5290/r8wheel1ljpg0f089f10250.jpg', 
+        products: []
+    },
+    {
+        id: 3, 
+        name: 'Brakes', 
+        imageUrl: 'http://img651.imageshack.us/img651/5600/brakes.gif', 
+        products: []
+    },
+    {
+        id: 4,
+        name: 'Exhausts', 
+        imageUrl: 'http://img217.imageshack.us/img217/7366/carbon20fibre20exhaust2.jpg', 
+        products: []
+    },
+    {
+        id: 5, 
+        name: 'Batteries', 
+        imageUrl: 'http://img842.imageshack.us/img842/268/t2ec16nhjhqe9nzej50bqu7.jpg', 
+        products: []
+    },
+    {
+        id: 6,
+        name: 'Wipers', 
+        imageUrl: 'http://img145.imageshack.us/img145/3750/1208764x64.jpg', 
+        products: []
+    },
+    {
+        id: 7, 
+        name: 'GPS', 
+        imageUrl: 'http://img687.imageshack.us/img687/8899/kgrhqroifcpor3cm0bq1ufc.jpg',
+        products: [701,702,703]
+    }, 
+    {
+        id: 8,
+        name: 'Windshields',
+        imageUrl: 'http://img405.imageshack.us/img405/6826/windshield3thumb.jpg',
+        products: []
+    }
+];
+
+App.Product.FIXTURES = [
+    {
+        id: 201,
+        name: 'Pirelli P4 Four Seasons',
+        category: 2,
+        price: 9999,
+        imageUrl: 'http://img4.imageshack.us/img4/4372/pirellip4fourseasonslg.jpg'
+    },
+    {
+        id: 701, 
+        name: 'Tomtom Start 4.3" GPS (45TM)', 
+        category: 7, 
+        price: 12999, 
+        imageUrl: 'http://img856.imageshack.us/img856/7471/seeq2501.jpg'
+    },
+    {
+        id: 702, 
+        name: 'Garmin nüvi 4.3" GPS (40)', 
+        category: 7,
+        price: 11999, 
+        imageUrl: 'http://img27.imageshack.us/img27/5116/88121963.jpg'
+    },
+    {
+        id: 703, 
+        name: 'Magellan RoadMate 2230T 4.3" GPS ', 
+        category: 7, 
+        price: 14399, 
+        imageUrl: 'http://img820.imageshack.us/img820/7981/36361380.png'
+    }
+];
+
+// Models - End
+
+
+
+// Views - Begin
+
+// Views - End
