@@ -14,32 +14,26 @@
 	</script>
 	
 
-	<script type="text/x-handlebars" data-template-name="header">
+	<script type="text/x-handlebars" data-template-name="_header">
 		<header>
-			<h1>Catálogo de Cursos</h1>
-			<div class="navbar">
-				<ul class="nav">
-					<li>{{#linkTo 'cursos'}}Cursos{{/linkTo}}</li>
-					<li>{{#linkTo 'curso'}}Nuevo Curso{{/linkTo}}</li>
-				</ul>
-			</div>
+			<h1>{{#linkTo index}}Catálogo de Cursos{{/linkTo}}</h1>
 		</header>
 		<hr/>
 	</script>
 
-	<script type="text/x-handlebars" data-template-name="footer">
+	<script type="text/x-handlebars" data-template-name="_footer">
+		<br/>
 		<hr/>
-		<footer>
+		<footer align="right">
 			&copy;2013 Carlos Alonso González
 		</footer>
 	</script>
 	
-	<script type="text/x-handlebars" id="cursos">
+	<script type="text/x-handlebars" data-template-name="cursos/list">
 		<h2>LISTADO DE CURSOS</h2>
+		{{#linkTo cursos.new}}Nuevo{{/linkTo}}
 
-		{{#linkTo 'curso'}}Nuevo Curso{{/linkTo}}
 		<center>
-
 		<table border="1" cellspacing="0" cellpadding="0" width="80%">
 			<thead>
 				<tr>
@@ -62,7 +56,9 @@
 							<td>{{titulo}}</td>
 							<td>{{nivel}}</td>
 							<td>{{horas}}</td>
-							<td>{{#linkTo 'cursos.curso' this}}edit{{/linkTo}}</td>
+							<td>
+								{{#linkTo cursos.show this}}Consultar{{/linkTo}}|{{#linkTo cursos.edit this}}Editar{{/linkTo}}
+							</td>
 						</tr>
 					{{/each}}
 				{{/unless}}				
@@ -76,37 +72,54 @@
 		</center>
 	</script>
 	
-	<script type="text/x-handlebars" id="curso">
+	<script type="text/x-handlebars" data-template-name="cursos/edit">
 		<h2>EDICIÓN CURSO</h2>
+		<p><label>Activo</label>{{view Ember.Checkbox  checkedBinding='activo'}}</p>
 
-		<label>Activo:</label>
-  		{{view Ember.Checkbox checkedBinding="content.activo"}}
-		<br/>
-		<label>Profesor</label>
-		{{view Ember.Select viewName="select"
+		<p><label>Titulo</label>{{view Ember.TextField valueBinding='titulo'}}</p>
+
+		<p><label>Horas</label>{{view Ember.TextField valueBinding='horas'}}</p>
+
+		<p>
+			<button {{action 'save'}}>Guardar</button>
+			<button {{action 'cancel'}}>Cancelar</button>
+		</p>
+	</script>
+	
+	<script type="text/x-handlebars" data-template-name="copy">
+		<h2>EDICIÓN CURSO</h2>
+		<p><label>Activo</label>{{view Ember.Checkbox  checkedBinding='activo'}}</p>
+
+		<p>
+			<label>Profesor</label>
+			{{view Ember.Select viewName="select"
                     contentBinding="App.TutorController"
                     optionLabelPath="content.nombreCompleto"
                     optionValuePath="content.id"
                     prompt="Seleccione un tutor:"
                     selectionBinding="App.selectedTutorController.tutor"
-		}}
-		<br/>
-		<label>Titulo</label>
-		<input type="text"/>
-		<br/>
-		<label>Nivel</label>
-		{{view Ember.Select viewName="select"
+			}}
+		</p>
+
+		<p><label>Titulo</label>{{view Ember.TextField valueBinding='titulo'}}</p>
+
+		<p>
+			<label>Nivel</label>
+			{{view Ember.Select viewName="select"
                     contentBinding="App.NivelController"
                     optionLabelPath="content.nivel"
                     optionValuePath="content.nivel"
                     prompt="Seleccione el nivel"
                     selectionBinding="App.selectedNivelController.tutor"
-		}}
-		<br/>
-		<label>Horas</label>
-		<input type="text"/>
-		<br/>
-		<input type="button" value="Añadir"/> <input type="button" value="Cancelar"/>
+			}}
+		</p>
+
+		<p><label>Horas</label>{{view Ember.TextField valueBinding='horas'}}</p>
+
+		<p>
+			<button {{action 'save'}}>Guardar</button>
+			<button {{action 'cancel'}}>Cancelar</button>
+		</p>
 	</script>
 	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
@@ -121,11 +134,11 @@ App = Ember.Application.create({
 
 //route
 App.Router.map(function() {
-    this.resource('cursos', function() {
-        this.route('curso', {path: 'curso/:curso_id'})
-    }),
-    this.resource('curso')
-	//this.resource('curso', {path: 'curso_id'})
+	this.resource('cursos', { path: '/cursos' }, function() {
+		this.route('new', { path: 'new' }),
+	    this.route('show', { path: ':curso_id' }),
+	    this.route('edit', { path: ':curso_id/edit' })
+	})
 });
 
 App.IndexRoute = Ember.Route.extend({
@@ -137,36 +150,29 @@ App.IndexRoute = Ember.Route.extend({
 App.CursosRoute = Ember.Route.extend({
 	model: function() {
 		return App.Curso.find();
-	}
-});
-
-App.CursoRoute = Ember.Route.extend({
-	tutores: function() {
-		return App.Tutor.find();
 	},
-	niveles: function() {
-		return ['BASICO', 'INTERMEDIO', 'AVANZADO'];
+	renderTemplate: function() {
+		this.render('cursos/list');
 	}
 });
 
-/*
-App.CursosController = Ember.ArrayController.extend();
-App.CursoController = Ember.ArrayController.extend();
-
-App.CursoController = Ember.ObjectController.extend({
-	isEditing: false,
-
-	edit: function() {
-		this.set('isEditing', true);
-	},
-
-	remove: function() {
-		var curso = this.get('model');
-		curso.deleteRecord();
-		curso.get('store').commit();
+App.CursosNewRoute = Ember.Route.extend({
+	renderTemplate:function(){
+		this.render('cursos/edit', {into:'application'});
 	}
 });
-*/
+
+App.CursosShowRoute = Ember.Route.extend({
+	renderTemplate:function(){
+		this.render('cursos/edit', {into:'application'});
+	}
+});
+
+App.CursosEditRoute = Ember.Route.extend({
+	renderTemplate:function(){
+		this.render('cursos/edit', {into:'application'});
+	}
+});
 
 //ember-data
 App.Store = DS.Store.extend({
