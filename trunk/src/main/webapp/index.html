@@ -72,7 +72,15 @@
 		</center>
 	</script>
 	
+	<script type="text/x-handlebars" data-template-name="cursos/new">
+		{{partial 'cursos/form'}}
+	</script>
+	
 	<script type="text/x-handlebars" data-template-name="cursos/edit">
+		{{partial 'cursos/form'}}
+	</script>
+	
+	<script type="text/x-handlebars" data-template-name="cursos/_form">
 		<h2>EDICIÓN CURSO</h2>
 		<p>
 			<label>Activo</label>
@@ -111,8 +119,8 @@
 		</p>
 
 		<p>
-			<button {{action 'save'}}>Guardar</button>
-			<button {{action 'cancel'}}>Cancelar</button>
+			<button {{action save}}>Guardar</button>
+			<button {{action cancel}}>Cancelar</button>
 		</p>
 	</script>
 	
@@ -142,6 +150,7 @@ App.IndexRoute = Ember.Route.extend({
 
 App.CursosRoute = Ember.Route.extend({
 	model: function() {
+		this.get('store.defaultTransaction').rollback();
 		return App.Curso.find();
 	},
 	renderTemplate: function() {
@@ -150,24 +159,48 @@ App.CursosRoute = Ember.Route.extend({
 });
 
 App.CursosNewRoute = Ember.Route.extend({
-	renderTemplate:function(){
-		this.render('cursos/edit', {into:'application'});
+	renderTemplate: function(){
+		this.render('cursos/new', {into:'application'});
 	},
-	setupController:function(controller,model) {
-	       this._super(controller,model);
-	       controller.set('tutores', App.Tutor.find());
+	setupController: function(controller, model) {
+		var model = this.get('store.defaultTransaction').createRecord(App.Curso);
+		controller.set('tutores', App.Tutor.find());
+		controller.set('content', model);
+	}
+});
+
+App.CursosNewController = Ember.ObjectController.extend({
+	tutores: null,
+	save: function() {
+		this.get('store.defaultTransaction').commit();
+		this.transitionToRoute('index');
+	},
+	cancel: function() {
+		this.content.deleteRecord();
+		this.transitionToRoute('index');
 	}
 });
 
 App.CursosEditRoute = Ember.Route.extend({
-	renderTemplate:function(){
+	renderTemplate: function(){
 		this.render('cursos/edit', {into:'application'});
 	},
-	setupController:function(controller,model) {
-	       this._super(controller,model);
-	       controller.set('tutores', App.Tutor.find());
+	setupController: function(controller, model) {
+		controller.set('tutores', App.Tutor.find());
 	}
 });
+
+App.CursosEditController = Ember.ObjectController.extend({
+	save: function() {
+		this.get('store.defaultTransaction').commit();
+		this.transitionToRoute('index');
+	},
+	cancel: function() {
+		this.get('store.defaultTransaction').rollback();
+		this.transitionToRoute('index');
+	}
+});
+
 
 App.niveles = ['BASICO', 'INTERMEDIO', 'AVANZADO'];
 
