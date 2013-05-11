@@ -95,13 +95,15 @@
   					optionLabelPath='content.nombreCompleto'
 					valueBinding='tutor.id'
                     prompt='Seleccione un tutor'
+					required='true'
 			}}
 		</p>
 
 		<p>
 			<label>Titulo</label>
 			{{view Ember.TextField 
-				valueBinding='titulo'}}
+				valueBinding='titulo'
+				required='true'}}
 		</p>
 
 		<p>
@@ -110,12 +112,15 @@
 					contentBinding='App.niveles'
 					valueBinding='nivel'
                     prompt='Seleccione el nivel'
+					required='true'
 			}}
 		</p>
 
 		<p>
 			<label>Horas</label>
-			{{view Ember.TextField valueBinding='horas'}}
+			{{view Ember.TextField 
+					valueBinding='horas'
+					required='true'}}
 		</p>
 
 		<p>
@@ -130,11 +135,38 @@
 	<script src="resources/js/libs/ember-data-latest.js"></script>
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
+	
+/* CONFIGURATION ***************************************************************/
 App = Ember.Application.create({
 	LOG_TRANSITIONS: true
 });
 
-//route
+//Ember.LOG_BINDINGS = true;
+
+
+Ember.onerror = function(error) {
+	alert(error);
+}
+
+/*
+Ember.onerror = function(error) {
+    Em.$.ajax('/error-notification', 'POST', {
+      stack: error.stack,
+      otherInformation: 'exception message'
+    });
+}
+*/
+
+Ember.TextField.reopen({
+	attributeBindings: ['required']
+});
+
+Ember.Select.reopen({
+	attributeBindings: ['required']
+});
+
+
+/* ROUTE ***************************************************************/
 App.Router.map(function() {
 	this.resource('cursos', { path: '/cursos' }, function() {
 		this.route('new', { path: 'new' }),
@@ -167,20 +199,8 @@ App.CursosNewRoute = Ember.Route.extend({
 	},
 	setupController: function(controller, model) {
 		var model = this.get('store.defaultTransaction').createRecord(App.Curso);
-		controller.set('tutores', App.Tutor.find());
 		controller.set('content', model);
-	}
-});
-
-App.CursosNewController = Ember.ObjectController.extend({
-	tutores: null,
-	save: function() {
-		this.get('store.defaultTransaction').commit();
-		this.transitionToRoute('cursos');
-	},
-	cancel: function() {
-		this.content.deleteRecord();
-		this.transitionToRoute('cursos');
+		controller.set('tutores', App.Tutor.find());
 	}
 });
 
@@ -190,6 +210,20 @@ App.CursosEditRoute = Ember.Route.extend({
 	},
 	setupController: function(controller, model) {
 		controller.set('tutores', App.Tutor.find());
+	}
+});
+
+
+/* CONTROLLER ***************************************************************/
+App.CursosNewController = Ember.ObjectController.extend({
+	tutores: null,
+	save: function() {
+		this.get('store.defaultTransaction').commit();
+		this.transitionToRoute('cursos');
+	},
+	cancel: function() {
+		this.content.deleteRecord();
+		this.transitionToRoute('cursos');
 	}
 });
 
@@ -205,9 +239,7 @@ App.CursosEditController = Ember.ObjectController.extend({
 });
 
 
-App.niveles = ['BASICO', 'INTERMEDIO', 'AVANZADO'];
-
-//ember-data
+/* DATA ***************************************************************/
 App.Store = DS.Store.extend({
 	revision: 12,
 	adapter: 'DS.FixtureAdapter'
@@ -219,11 +251,14 @@ DS.RESTAdapter.reopen({
 	namespace: 'curso-demo/rest'
 });
 
-DS.RESTAdapter.configure("plurals", {
-	tutor: "tutores"
+DS.RESTAdapter.configure('plurals', {
+	tutor: 'tutores'
 });
 
-//model
+
+/* MODEL ***************************************************************/
+App.niveles = ['BASICO', 'INTERMEDIO', 'AVANZADO'];
+
 App.Tutor = DS.Model.extend({
 	nombre: DS.attr('string'),
 	apellidos: DS.attr('string'),
@@ -243,6 +278,7 @@ App.Curso = DS.Model.extend({
     }.property('activo')
 });
 
+/* DATA TESTING ***************************************************************/
 App.Curso.FIXTURES = 
 [
 	{
