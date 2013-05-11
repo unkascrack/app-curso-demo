@@ -32,7 +32,7 @@ public interface CursoMapper {
      * @return
      */
     List<Curso> selectByActivo(@Param("page") Integer page, @Param("size") Integer size,
-            @Param("orderBy") String orderBy, @Param("orderType") boolean orderType);
+            @Param("orderBy") String orderBy, @Param("orderType") Boolean orderType);
 
     /**
      * @param curso

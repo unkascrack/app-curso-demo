@@ -10,6 +10,17 @@
 		<result property="apellidos" column="DE_APELLIDOS"/>
 	</resultMap>
 
+	<select id="selectById" parameterType="Long" resultMap="TutorMap">
+		SELECT
+			ID_TUTOR,
+			DE_NOMBRE,
+			DE_APELLIDOS
+		FROM
+			TBG_TUTOR
+		WHERE
+			ID_TUTOR = #{value,jdbcType=NUMERIC}
+	</select>
+
 	<select id="selectAll" resultMap="TutorMap">
 		SELECT
 			ID_TUTOR,

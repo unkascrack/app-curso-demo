@@ -29,4 +29,23 @@ public class TutorMapperTest {
         final List<Tutor> tutores = tutorMapper.selectAll();
         Assert.assertFalse(tutores.isEmpty());
     }
+
+    @Test
+    public void testSelectByIdNull() {
+        final Tutor tutor = tutorMapper.selectById(null);
+        Assert.assertNull(tutor);
+    }
+
+    @Test
+    public void testSelectByIdNotFound() {
+        final Tutor tutor = tutorMapper.selectById(null);
+        Assert.assertNull(tutor);
+    }
+
+    @Test
+    public void testSelectByIdOk() {
+        final Tutor tutor = tutorMapper.selectById(1l);
+        Assert.assertNotNull(tutor);
+        Assert.assertSame(1l, tutor.getId());
+    }
 }
