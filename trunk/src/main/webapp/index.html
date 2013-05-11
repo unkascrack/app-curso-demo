@@ -69,6 +69,13 @@
 				</tr>
 			</tfoot>
 		</table>
+		<br/>
+		<p>
+		ListView: http://emberjs.com/list-view/
+  		{{#collection Ember.ListView contentBinding="controller" height=200 rowHeight=20 width=500}}
+    		{{id}} {{titulo}} {{nivel}} {{horas}}
+  		{{/collection}}
+		</p>
 		</center>
 	</script>
 	
@@ -93,17 +100,15 @@
                     contentBinding='controller.tutores'
 					optionValuePath='content.id'
   					optionLabelPath='content.nombreCompleto'
-					valueBinding='tutor.id'
+					selectionBinding='tutor'
                     prompt='Seleccione un tutor'
-					required='true'
 			}}
 		</p>
 
 		<p>
 			<label>Titulo</label>
 			{{view Ember.TextField 
-				valueBinding='titulo'
-				required='true'}}
+				valueBinding='titulo'}}
 		</p>
 
 		<p>
@@ -111,16 +116,13 @@
 			{{view Ember.Select 
 					contentBinding='App.niveles'
 					valueBinding='nivel'
-                    prompt='Seleccione el nivel'
-					required='true'
-			}}
+                    prompt='Seleccione el nivel'}}
 		</p>
 
 		<p>
 			<label>Horas</label>
 			{{view Ember.TextField 
-					valueBinding='horas'
-					required='true'}}
+					valueBinding='horas'}}
 		</p>
 
 		<p>
@@ -133,6 +135,7 @@
 	<script src="resources/js/libs/handlebars-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/ember-data-1.0.0-rc.3.js"></script>
+	<script src="resources/js/libs/list-view.js"></script>
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
 	
@@ -142,7 +145,6 @@ App = Ember.Application.create({
 });
 
 //Ember.LOG_BINDINGS = true;
-
 
 Ember.onerror = function(error) {
 	console.log(error.stack);
@@ -157,15 +159,6 @@ Ember.onerror = function(error) {
     });
 }
 */
-
-Ember.TextField.reopen({
-	attributeBindings: ['required']
-});
-
-Ember.Select.reopen({
-	attributeBindings: ['required']
-});
-
 
 /* ROUTE ***************************************************************/
 App.Router.map(function() {
@@ -182,15 +175,14 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.CursosRoute = Ember.Route.extend({
-	model: function() {
-		return App.Curso.find();
+	setupController: function(controller, model) {
+		controller.set('content', App.Curso.find());
 	}
 });
 
 App.CursosIndexRoute = Ember.Route.extend({
-	model: function() {
-		this.get('store.defaultTransaction').rollback();
-		return App.Curso.find();
+	setupController: function(controller, model) {
+		controller.set('content', App.Curso.find());
 	},
 	renderTemplate: function(){
 		this.render('cursos', {into:'application'});
@@ -202,7 +194,6 @@ App.CursosNewRoute = Ember.Route.extend({
 		this.render('cursos/new', {into:'application'});
 	},
 	setupController: function(controller, model) {
-		//var model = this.get('store.defaultTransaction').createRecord(App.Curso);
 		controller.set('content', App.Curso.createRecord());
 		controller.set('tutores', App.Tutor.find());
 	}
@@ -213,7 +204,6 @@ App.CursosEditRoute = Ember.Route.extend({
 		this.render('cursos/edit', {into:'application'});
 	},
 	setupController: function(controller, model) {
-		model.reload();
 		controller.set('content', App.Curso.find(model.id));
 		controller.set('tutores', App.Tutor.find());
 	}
@@ -221,19 +211,33 @@ App.CursosEditRoute = Ember.Route.extend({
 
 
 /* CONTROLLER ***************************************************************/
+App.IndexController = Ember.ArrayController.extend({
+  content: []
+});
+
+App.CursosController = Ember.ArrayController.extend({
+	  content: []
+});
+
+App.CursosIndexController = Ember.ArrayController.extend({
+	  content: []
+});
+
 App.CursosNewController = Ember.ObjectController.extend({
-	tutores: null,
+	tutores: [],
 	save: function() {
 		this.get('store.defaultTransaction').commit();
 		this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.content.deleteRecord();
+		this.get('store.defaultTransaction').commit();
 		this.transitionToRoute('cursos');
 	}
 });
 
 App.CursosEditController = Ember.ObjectController.extend({
+	tutores: [],
 	save: function() {
 		this.get('store.defaultTransaction').commit();
 		this.transitionToRoute('cursos');
