@@ -131,8 +131,8 @@
 	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
 	<script src="resources/js/libs/handlebars-1.0.0-rc.3.js"></script>
-	<script src="resources/js/libs/ember-latest.js"></script>
-	<script src="resources/js/libs/ember-data-latest.js"></script>
+	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
+	<script src="resources/js/libs/ember-data-1.0.0-rc.3.js"></script>
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
 	
@@ -145,6 +145,7 @@ App = Ember.Application.create({
 
 
 Ember.onerror = function(error) {
+	console.log(error.stack);
 	alert(error);
 }
 
@@ -182,12 +183,15 @@ App.IndexRoute = Ember.Route.extend({
 
 App.CursosRoute = Ember.Route.extend({
 	model: function() {
-		//this.get('store.defaultTransaction').rollback();
 		return App.Curso.find();
 	}
 });
 
 App.CursosIndexRoute = Ember.Route.extend({
+	model: function() {
+		this.get('store.defaultTransaction').rollback();
+		return App.Curso.find();
+	},
 	renderTemplate: function(){
 		this.render('cursos', {into:'application'});
 	}
@@ -198,8 +202,8 @@ App.CursosNewRoute = Ember.Route.extend({
 		this.render('cursos/new', {into:'application'});
 	},
 	setupController: function(controller, model) {
-		var model = this.get('store.defaultTransaction').createRecord(App.Curso);
-		controller.set('content', model);
+		//var model = this.get('store.defaultTransaction').createRecord(App.Curso);
+		controller.set('content', App.Curso.createRecord());
 		controller.set('tutores', App.Tutor.find());
 	}
 });
@@ -209,6 +213,8 @@ App.CursosEditRoute = Ember.Route.extend({
 		this.render('cursos/edit', {into:'application'});
 	},
 	setupController: function(controller, model) {
+		model.reload();
+		controller.set('content', App.Curso.find(model.id));
 		controller.set('tutores', App.Tutor.find());
 	}
 });
@@ -242,17 +248,23 @@ App.CursosEditController = Ember.ObjectController.extend({
 /* DATA ***************************************************************/
 App.Store = DS.Store.extend({
 	revision: 12,
-	adapter: 'DS.FixtureAdapter'
-	//adapter: 'DS.RESTAdapter'
-});
-
-DS.RESTAdapter.reopen({
-	url: 'http://localhost:8080/',
-	namespace: 'curso-demo/rest'
+	/*adapter: 'DS.FixtureAdapter'*/
+	adapter: DS.RESTAdapter.extend({
+		url: 'http://localhost:8080/',
+		namespace: 'curso-demo/rest',
+		bulkCommit: false,
+		serializer: DS.RESTSerializer.extend({
+			init: function() {
+				this._super();
+		        this.map("App.Curso", {tutor: { embedded: "load" }});
+			}
+		})
+	})
 });
 
 DS.RESTAdapter.configure('plurals', {
-	tutor: 'tutores'
+	tutor: 'tutores',
+	curso: 'cursos'
 });
 
 
@@ -272,10 +284,7 @@ App.Curso = DS.Model.extend({
 	tutor: DS.belongsTo('App.Tutor'),
 	titulo: DS.attr('string'),
 	nivel: DS.attr('string'),
-	horas: DS.attr('number'),
-	plain: function () {
-        return this.get('id') + ' '+ this.get('activo');
-    }.property('activo')
+	horas: DS.attr('number')
 });
 
 /* DATA TESTING ***************************************************************/
@@ -284,7 +293,7 @@ App.Curso.FIXTURES =
 	{
 		"id":1,
 		"activo":true,
-		"tutor": 1,
+		"tutor":1,
 		"titulo":"Curso 1",
 		"nivel":"BASICO",
 		"horas":20,
@@ -294,7 +303,7 @@ App.Curso.FIXTURES =
 	{
 		"id":2,
 		"activo":true,
-		"tutor": 1,
+		"tutor":1,
 		"titulo":"Curso 2",
 		"nivel":"INTERMEDIO",
 		"horas":40,
@@ -304,7 +313,7 @@ App.Curso.FIXTURES =
 	{
 		"id":3,
 		"activo":true,
-		"tutor": 1,
+		"tutor":1,
 		"titulo":"Curso 3",
 		"nivel":"INTERMEDIO",
 		"horas":60,
@@ -314,7 +323,7 @@ App.Curso.FIXTURES =
 	{
 		"id":4,
 		"activo":true,
-		"tutor": [2],
+		"tutor":[2],
 		"titulo":"Curso 3",
 		"nivel":"AVANZADO",
 		"horas":120,
