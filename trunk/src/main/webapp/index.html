@@ -7,7 +7,7 @@
 	<link rel="stylesheet" href="resources/css/style.css">
 </head>
 <body>
-	<script type="text/x-handlebars">
+	<script type="text/x-handlebars" data-template-name="application">
     	{{partial 'header'}}
     	{{outlet}}   
     	{{partial 'footer'}}
@@ -29,7 +29,7 @@
 		</footer>
 	</script>
 	
-	<script type="text/x-handlebars" data-template-name="cursos/list">
+	<script type="text/x-handlebars" data-template-name="cursos">
 		<h2>LISTADO DE CURSOS</h2>
 		{{#linkTo cursos.new}}Nuevo{{/linkTo}}
 
@@ -126,7 +126,7 @@
 	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
 	<script src="resources/js/libs/handlebars-1.0.0-rc.3.js"></script>
-	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
+	<script src="resources/js/libs/ember-latest.js"></script>
 	<script src="resources/js/libs/ember-data-latest.js"></script>
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
@@ -150,11 +150,14 @@ App.IndexRoute = Ember.Route.extend({
 
 App.CursosRoute = Ember.Route.extend({
 	model: function() {
-		this.get('store.defaultTransaction').rollback();
+		//this.get('store.defaultTransaction').rollback();
 		return App.Curso.find();
-	},
-	renderTemplate: function() {
-		this.render('cursos/list');
+	}
+});
+
+App.CursosIndexRoute = Ember.Route.extend({
+	renderTemplate: function(){
+		this.render('cursos', {into:'application'});
 	}
 });
 
@@ -173,11 +176,11 @@ App.CursosNewController = Ember.ObjectController.extend({
 	tutores: null,
 	save: function() {
 		this.get('store.defaultTransaction').commit();
-		this.transitionToRoute('index');
+		this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.content.deleteRecord();
-		this.transitionToRoute('index');
+		this.transitionToRoute('cursos');
 	}
 });
 
@@ -193,11 +196,11 @@ App.CursosEditRoute = Ember.Route.extend({
 App.CursosEditController = Ember.ObjectController.extend({
 	save: function() {
 		this.get('store.defaultTransaction').commit();
-		this.transitionToRoute('index');
+		this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.get('store.defaultTransaction').rollback();
-		this.transitionToRoute('index');
+		this.transitionToRoute('cursos');
 	}
 });
 
@@ -209,6 +212,15 @@ App.Store = DS.Store.extend({
 	revision: 12,
 	adapter: 'DS.FixtureAdapter'
 	//adapter: 'DS.RESTAdapter'
+});
+
+DS.RESTAdapter.reopen({
+	url: 'http://localhost:8080/',
+	namespace: 'curso-demo/rest'
+});
+
+DS.RESTAdapter.configure("plurals", {
+	tutor: "tutores"
 });
 
 //model
