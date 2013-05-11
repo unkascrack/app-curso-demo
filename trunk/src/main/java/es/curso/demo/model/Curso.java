@@ -7,6 +7,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import flexjson.JSON;
+
 public class Curso implements Serializable {
 
     private static final long serialVersionUID = 7977276319395424712L;
@@ -15,6 +17,7 @@ public class Curso implements Serializable {
 
     private boolean activo = false;
 
+    @JSON(include = true)
     @NotNull
     private Tutor tutor;
 
@@ -53,6 +56,11 @@ public class Curso implements Serializable {
 
     public Tutor getTutor() {
         return tutor;
+    }
+
+    @JSON(include = false, name = "tutor_id")
+    public Long getIdTutor() {
+        return tutor != null ? tutor.getId() : null;
     }
 
     public void setTutor(final Tutor tutor) {
