@@ -1,4 +1,4 @@
-// Last commit: e33b544 (2013-05-05 06:45:13 -0700)
+// Last commit: 7e6f66e (2013-05-10 10:20:34 -0700)
 
 
 (function() {
@@ -280,7 +280,7 @@ var LoadPromise = DS.LoadPromise; // system/mixins/load_promise
   @uses DS.LoadPromise
 */
 
-DS.RecordArray = Ember.ArrayProxy.extend(Ember.Evented, LoadPromise, {
+DS.RecordArray = Ember.ArrayProxy.extend(LoadPromise, {
   /**
     The model type contained by this record array.
 
@@ -606,16 +606,13 @@ DS.AdapterPopulatedRecordArray = DS.RecordArray.extend({
   },
 
   load: function(references) {
-    this.beginPropertyChanges();
-    set(this, 'content', Ember.A(references));
-    set(this, 'isLoaded', true);
-    this.endPropertyChanges();
-
-    var self = this;
-    // TODO: does triggering didLoad event should be the last action of the runLoop?
-    Ember.run.once(function() {
-      self.trigger('didLoad');
+    this.setProperties({
+      content: Ember.A(references),
+      isLoaded: true
     });
+
+    // TODO: does triggering didLoad event should be the last action of the runLoop?
+    Ember.run.once(this, 'trigger', 'didLoad');
   }
 });
 
@@ -993,6 +990,30 @@ DS.Transaction = Ember.Object.extend({
     return relationships;
   }).volatile(),
 
+  commitDetails: Ember.computed(function() {
+    var commitDetails = Ember.MapWithDefault.create({
+      defaultValue: function() {
+        return {
+          created: Ember.OrderedSet.create(),
+          updated: Ember.OrderedSet.create(),
+          deleted: Ember.OrderedSet.create()
+        };
+      }
+    });
+
+    var records = get(this, 'records'),
+        store = get(this, 'store');
+
+    records.forEach(function(record) {
+      if(!get(record, 'isDirty')) return;
+      record.send('willCommit');
+      var adapter = store.adapterForType(record.constructor);
+      commitDetails.get(adapter)[get(record, 'dirtyType')].add(record);
+    });
+
+    return commitDetails;
+  }).volatile(),
+
   /**
     Commits the transaction, which causes all of the modified records that
     belong to the transaction to be sent to the adapter to be saved.
@@ -1004,24 +1025,22 @@ DS.Transaction = Ember.Object.extend({
   */
   commit: function() {
     var store = get(this, 'store');
-    var adapter = get(store, '_adapter');
 
     if (get(this, 'isDefault')) {
       set(store, 'defaultTransaction', store.transaction());
     }
 
     this.removeCleanRecords();
-    var relationships = get(this, 'relationships');
 
-    var commitDetails = this._commitDetails();
+    var commitDetails = get(this, 'commitDetails'),
+        relationships = get(this, 'relationships');
 
-    if (!commitDetails.created.isEmpty() || !commitDetails.updated.isEmpty() || !commitDetails.deleted.isEmpty() || !commitDetails.relationships.isEmpty()) {
-
+    commitDetails.forEach(function(adapter, commitDetails) {
       Ember.assert("You tried to commit records but you have no adapter", adapter);
       Ember.assert("You tried to commit records but your adapter does not implement `commit`", adapter.commit);
 
       adapter.commit(store, commitDetails);
-    }
+    });
 
     // Once we've committed the transaction, there is no need to
     // keep the OneToManyChanges around. Destroy them so they
@@ -1029,26 +1048,6 @@ DS.Transaction = Ember.Object.extend({
     relationships.forEach(function(relationship) {
       relationship.destroy();
     });
-  },
-
-  _commitDetails: function() {
-    var relationships = get(this, 'relationships');
-    var commitDetails = {
-      created: Ember.OrderedSet.create(),
-      updated: Ember.OrderedSet.create(),
-      deleted: Ember.OrderedSet.create(),
-      relationships: relationships
-    };
-
-    var records = get(this, 'records');
-
-    records.forEach(function(record) {
-      if(!get(record, 'isDirty')) return;
-      record.send('willCommit');
-      commitDetails[get(record, 'dirtyType')].add(record);
-    });
-
-    return commitDetails;
   },
 
   /**
@@ -1076,7 +1075,6 @@ DS.Transaction = Ember.Object.extend({
       references.add(r.secondRecordReference);
       r.destroy();
     });
-    relationships.clear();
 
     var records = get(this, 'records');
     records.forEach(function(record) {
@@ -1091,7 +1089,6 @@ DS.Transaction = Ember.Object.extend({
     // Remaining associated references are not part of the transaction, but
     // can still have hasMany's which have not been reloaded
     references.forEach(function(r) {
-
       if (r && r.record) {
         var record = r.record;
         record.suspendRelationshipObservers(function() {
@@ -7263,7 +7260,9 @@ DS.JSONSerializer = DS.Serializer.extend({
 
     @returns {String} the key
   */
-  keyForPolymorphicId: Ember.K,
+  keyForPolymorphicId: function(key){
+    return key;
+  },
 
   /**
     A hook you can use in your serializer subclass to customize
@@ -7273,7 +7272,9 @@ DS.JSONSerializer = DS.Serializer.extend({
 
     @returns {String} the key
   */
-  keyForPolymorphicType: Ember.K,
+  keyForPolymorphicType: function(key){
+    return this.keyForPolymorphicId(key) + '_type';
+  },
 
   /**
     A hook you can use in your serializer subclass to customize
@@ -8249,8 +8250,9 @@ DS.FixtureAdapter = DS.Adapter.extend({
     if (type.FIXTURES) {
       var fixtures = Ember.A(type.FIXTURES);
       return fixtures.map(function(fixture){
-        if(!fixture.id){
-          throw new Error(fmt('the id property must be defined for fixture %@', [dump(fixture)]));
+        var fixtureIdType = typeof fixture.id;
+        if(fixtureIdType !== "number" && fixtureIdType !== "string"){
+          throw new Error(fmt('the id property must be defined as a number or string for fixture %@', [dump(fixture)]));
         }
         fixture.id = fixture.id + '';
         return fixture;
