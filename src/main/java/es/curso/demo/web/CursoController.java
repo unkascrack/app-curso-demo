@@ -6,6 +6,8 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.curso.demo.mapper.CursoMapper;
 import es.curso.demo.model.Curso;
+import es.curso.demo.model.JSONResponse;
+import flexjson.JSONSerializer;
 
+@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 @RequestMapping("cursos")
 @Controller
 public class CursoController {
@@ -25,33 +30,46 @@ public class CursoController {
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public List<Curso> list(@RequestParam(defaultValue = "1") final Integer page,
+    public String list(@RequestParam(defaultValue = "1") final Integer page,
             @RequestParam(defaultValue = "10") final Integer size,
             @RequestParam(defaultValue = "titulo") final String orderBy,
             @RequestParam(defaultValue = "false") final Boolean orderType) {
-        return cursoMapper.selectByActivo(page, size, orderBy, orderType);
+        final List<Curso> cursos = cursoMapper.selectByActivo(page, size, orderBy, orderType);
+        return new JSONSerializer().rootName("cursos").exclude("*.class").serialize(cursos);
     }
 
-    @RequestMapping(value = "get/{id}", method = RequestMethod.GET, produces = "application/json")
+    @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Curso getById(@PathVariable final Long id) {
-        return cursoMapper.selectById(id);
+    public String getById(@PathVariable final Long id) {
+        final Curso curso = cursoMapper.selectById(id);
+        return curso != null ? new JSONSerializer().rootName("curso").exclude("*.class").serialize(curso) : null;
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     @RequestMapping(value = "create", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public String create(@Valid final Curso curso, final BindingResult bindingResult) {
-        String result = null;
+    public JSONResponse createReturnJSONResponse(@Valid final Curso curso, final BindingResult bindingResult) {
+        final JSONResponse response = new JSONResponse();
         if (bindingResult.hasErrors()) {
-            result = "ERROR";
+            response.setStatus("ERROR");
         } else {
             cursoMapper.insert(curso);
-            result = "OK";
+            response.setStatus("OK");
         }
-        return result;
+        response.setResult(curso);
+        return response;
     }
 
-    @RequestMapping(value = "update", method = RequestMethod.PUT, produces = "application/json")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
+    @ResponseBody
+    public Curso createReturnCurso(final Curso curso, final BindingResult bindingResult) {
+        cursoMapper.insert(curso);
+        return curso;
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
     public String update(@Valid final Curso curso, final BindingResult bindingResult) {
         String result = null;
@@ -64,7 +82,8 @@ public class CursoController {
         return result;
     }
 
-    @RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE, produces = "application/json")
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public String delete(@PathVariable final Long id) {
         String result = null;
