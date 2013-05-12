@@ -1,0 +1,10 @@
+TODO:
+ * Añadir validación a los campos, tanto javascript como JSR 303
+ * Más tests
+ * Revisar el refesh de la lista de cursos mostradas en ember, no se actualiza correctamente.
+ * Permitir páginar la lista de cursos
+ * Poder ordenar la lista de cursos por título
+ * Empaquetar JS correctamente
+ * Guardar configuración eclipse: clean y formatter, además de añadir plugin maven para su uso
+ * CSS
+ 
