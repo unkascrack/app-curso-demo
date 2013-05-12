@@ -18,7 +18,6 @@ public class Curso implements Serializable {
     private boolean activo = false;
 
     @JSON(include = true)
-    @NotNull
     private Tutor tutor;
 
     @NotNull
@@ -34,9 +33,7 @@ public class Curso implements Serializable {
     private Integer horas;
 
     @Size(max = 250)
-    private String nombreTemario;
-
-    private byte[] contenidoTemario;
+    private String temario;
 
     public Long getId() {
         return id;
@@ -91,20 +88,12 @@ public class Curso implements Serializable {
         this.horas = horas;
     }
 
-    public String getNombreTemario() {
-        return nombreTemario;
+    public String getTemario() {
+        return temario;
     }
 
-    public void setNombreTemario(final String nombreTemario) {
-        this.nombreTemario = nombreTemario;
-    }
-
-    public byte[] getContenidoTemario() {
-        return contenidoTemario;
-    }
-
-    public void setContenidoTemario(final byte[] contenidoTemario) {
-        this.contenidoTemario = contenidoTemario;
+    public void setTemario(final String temario) {
+        this.temario = temario;
     }
 
     @Override
@@ -140,6 +129,6 @@ public class Curso implements Serializable {
     @Override
     public String toString() {
         return "Curso [activo=" + activo + ", tutor=" + tutor + ", titulo=" + titulo + ", nivel=" + nivel + ", horas="
-                + horas + "]";
+                + horas + ", temario=" + temario + "]";
     }
 }
