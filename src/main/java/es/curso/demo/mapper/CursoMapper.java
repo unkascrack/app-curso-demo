@@ -14,12 +14,6 @@ public interface CursoMapper {
     Curso selectById(Long idCurso);
 
     /**
-     * @param idCurso
-     * @return
-     */
-    Curso selectTemarioById(Long idCurso);
-
-    /**
      * @return
      */
     Integer selectCountByActivo();
