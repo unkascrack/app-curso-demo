@@ -15,10 +15,5 @@
 
 	<!-- cargamos anotaciones mvc -->
 	<mvc:annotation-driven />
-	
-	<!-- gestión de subida de archivos (upload) -->	
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<property name="maxUploadSize" value="1000000"/>
-	</bean>
-	
+
 </beans>
