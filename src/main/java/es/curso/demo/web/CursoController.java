@@ -2,14 +2,14 @@ package es.curso.demo.web;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,16 +17,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.curso.demo.mapper.CursoMapper;
 import es.curso.demo.model.Curso;
-import es.curso.demo.model.JSONResponse;
-import flexjson.JSONSerializer;
+import es.curso.demo.service.JSONService;
 
 @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 @RequestMapping("cursos")
 @Controller
 public class CursoController {
 
+    static final Logger logger = LoggerFactory.getLogger(CursoController.class);
+
     @Autowired
     private transient CursoMapper cursoMapper;
+
+    @Autowired
+    private transient JSONService jsonService;
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -35,51 +39,33 @@ public class CursoController {
             @RequestParam(defaultValue = "titulo") final String orderBy,
             @RequestParam(defaultValue = "false") final Boolean orderType) {
         final List<Curso> cursos = cursoMapper.selectByActivo(page, size, orderBy, orderType);
-        return new JSONSerializer().rootName("cursos").exclude("*.class").serialize(cursos);
+        return jsonService.serialize("cursos", cursos);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String getById(@PathVariable final Long id) {
         final Curso curso = cursoMapper.selectById(id);
-        return curso != null ? new JSONSerializer().rootName("curso").exclude("*.class").serialize(curso) : null;
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    @RequestMapping(value = "create", method = RequestMethod.POST, produces = "application/json")
-    @ResponseBody
-    public JSONResponse createReturnJSONResponse(@Valid final Curso curso, final BindingResult bindingResult) {
-        final JSONResponse response = new JSONResponse();
-        if (bindingResult.hasErrors()) {
-            response.setStatus("ERROR");
-        } else {
-            cursoMapper.insert(curso);
-            response.setStatus("OK");
-        }
-        response.setResult(curso);
-        return response;
+        return jsonService.serialize("curso", curso);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Curso createReturnCurso(final Curso curso, final BindingResult bindingResult) {
+    public String create(@RequestBody final String json) {
+        final Curso curso = jsonService.deserialize(Curso.class, "curso", json);
         cursoMapper.insert(curso);
-        return curso;
+        return jsonService.serialize("curso", curso);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-    @RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public String update(@Valid final Curso curso, final BindingResult bindingResult) {
-        String result = null;
-        if (bindingResult.hasErrors() || curso.getId() == null) {
-            result = "ERROR";
-        } else {
-            cursoMapper.update(curso);
-            result = "OK";
-        }
-        return result;
+    public String update(@PathVariable final Long id, @RequestBody final String json) {
+        final Curso curso = jsonService.deserialize(Curso.class, "curso", json);
+        curso.setId(id);
+        cursoMapper.update(curso);
+        return jsonService.serialize("curso", curso);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
