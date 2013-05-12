@@ -6,26 +6,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import es.curso.demo.mapper.TutorMapper;
 import es.curso.demo.model.Tutor;
 import es.curso.demo.service.JSONService;
+import es.curso.demo.service.TutorService;
 
 @RequestMapping("tutores")
 @Controller
-@Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
 public class TutorController {
 
     static final Logger logger = LoggerFactory.getLogger(TutorController.class);
 
     @Autowired
-    private transient TutorMapper tutorMapper;
+    private transient TutorService tutorService;
 
     @Autowired
     private transient JSONService jsonService;
@@ -33,14 +30,14 @@ public class TutorController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String list() {
-        final List<Tutor> tutores = tutorMapper.selectAll();
+        final List<Tutor> tutores = tutorService.findAll();
         return jsonService.serialize("tutores", tutores);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String getById(@PathVariable final Long id) {
-        final Tutor tutor = tutorMapper.selectById(id);
+        final Tutor tutor = tutorService.findById(id);
         return jsonService.serialize("tutor", tutor);
     }
 }

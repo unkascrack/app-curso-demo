@@ -1,5 +1,7 @@
 package es.curso.demo.web;
 
+import java.io.IOException;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -53,13 +55,13 @@ public class CursoControllerTest {
         Assert.assertTrue(response.contains("\"id\":1"));
     }
 
-    @Test
-    public void testCreateEmpty() {
+    @Test(expected = Exception.class)
+    public void testCreateEmpty() throws IOException {
         controller.create("");
     }
 
     @Test
-    public void testCreateOk() {
+    public void testCreateOk() throws IOException {
         final Curso curso = new Curso();
         curso.setTitulo("titulo");
         curso.setActivo(true);

@@ -87,7 +87,9 @@
 			DE_TITULO = #{titulo,jdbcType=VARCHAR},
 			DE_NIVEL = #{nivel,jdbcType=VARCHAR},
 			NU_HORAS = #{horas,jdbcType=NUMERIC},
-			DE_TEMARIO = #{temario,jdbcType=VARCHAR},
+			<if test="temario != null">
+				DE_TEMARIO = #{temario,jdbcType=VARCHAR},
+			</if>
 			ID_TUTOR = #{tutor.id,jdbcType=NUMERIC}
 		WHERE 
 			ID_CURSO = #{id,jdbcType=NUMERIC}
