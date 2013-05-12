@@ -8,12 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import es.curso.demo.model.Curso;
+import es.curso.demo.model.Nivel;
+import es.curso.demo.model.Tutor;
+import es.curso.demo.service.JSONService;
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring-config-test.xml" })
 public class CursoControllerTest {
 
     @Autowired
     private CursoController controller;
+
+    @Autowired
+    private JSONService jsonService;
 
     @Test
     public void testCursoControllerNotNull() {
@@ -43,5 +51,21 @@ public class CursoControllerTest {
         final String response = controller.getById(1l);
         Assert.assertNotNull(response);
         Assert.assertTrue(response.contains("\"id\":1"));
+    }
+
+    @Test
+    public void testCreateEmpty() {
+        controller.create("");
+    }
+
+    @Test
+    public void testCreateOk() {
+        final Curso curso = new Curso();
+        curso.setTitulo("titulo");
+        curso.setActivo(true);
+        curso.setHoras(10);
+        curso.setNivel(Nivel.BASICO);
+        curso.setTutor(new Tutor(1l));
+        controller.create(jsonService.serialize("curso", curso));
     }
 }
