@@ -42,6 +42,7 @@
 					<th width="100">Nivel</th>
 					<th width="50">Horas</th>
 					<th width="50"></th>
+					<th width="50"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -56,7 +57,10 @@
 							<td>{{titulo}}</td>
 							<td>{{nivel}}</td>
 							<td>{{horas}}</td>
-							<td>
+							<td align="center">
+								{{temario}}
+							</td>
+							<td align="center">
 								{{#linkTo cursos.edit this}}Editar{{/linkTo}}
 							</td>
 						</tr>
@@ -65,7 +69,7 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="5">footer</td>
+					<td colspan="6">footer</td>
 				</tr>
 			</tfoot>
 		</table>
@@ -117,12 +121,25 @@
 					contentBinding='App.niveles'
 					valueBinding='nivel'
                     prompt='Seleccione el nivel'}}
+
+			
 		</p>
 
 		<p>
 			<label>Horas</label>
-			{{view Ember.TextField 
+			{{view Ember.TextField
+					min='0'
+					max='500'
+					class='numeric'
+					type='number' 
 					valueBinding='horas'}}
+		</p>
+
+		<p>
+			<label>Temario</label>
+			{{view Ember.TextField
+					type='upload' 
+					valueBinding='temario'}}
 		</p>
 
 		<p>
@@ -136,6 +153,8 @@
 	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/ember-data-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/list-view.js"></script>
+	<script src="resources/js/libs/jquery.numeric.js"></script>
+	
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
 	
@@ -160,6 +179,14 @@ Ember.onerror = function(error) {
 }
 */
 
+Ember.TextField.reopen({
+	attributeBindings: ['required','min','max']
+});
+
+Ember.Select.reopen({
+	attributeBindings: ['required']
+});
+
 /* ROUTE ***************************************************************/
 App.Router.map(function() {
 	this.resource('cursos', { path: '/cursos' }, function() {
@@ -175,15 +202,17 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.CursosRoute = Ember.Route.extend({
-	setupController: function(controller, model) {
-		controller.set('content', App.Curso.find());
-	}
+	model: function(params) {
+		//this.get('store.defaultTransaction').rollback();
+        return App.Curso.find();
+    }
 });
 
 App.CursosIndexRoute = Ember.Route.extend({
-	setupController: function(controller, model) {
-		controller.set('content', App.Curso.find());
-	},
+	model: function(params) {
+		//this.get('store.defaultTransaction').rollback();
+        return App.Curso.find();
+    },
 	renderTemplate: function(){
 		this.render('cursos', {into:'application'});
 	}
@@ -211,17 +240,11 @@ App.CursosEditRoute = Ember.Route.extend({
 
 
 /* CONTROLLER ***************************************************************/
-App.IndexController = Ember.ArrayController.extend({
-  content: []
-});
+App.IndexController = Ember.ArrayController.extend();
 
-App.CursosController = Ember.ArrayController.extend({
-	  content: []
-});
+App.CursosController = Ember.ArrayController.extend();
 
-App.CursosIndexController = Ember.ArrayController.extend({
-	  content: []
-});
+App.CursosIndexController = Ember.ArrayController.extend();
 
 App.CursosNewController = Ember.ObjectController.extend({
 	tutores: [],
@@ -288,7 +311,8 @@ App.Curso = DS.Model.extend({
 	tutor: DS.belongsTo('App.Tutor'),
 	titulo: DS.attr('string'),
 	nivel: DS.attr('string'),
-	horas: DS.attr('number')
+	horas: DS.attr('number'),
+	temario: DS.attr('string')
 });
 
 /* DATA TESTING ***************************************************************/
@@ -301,8 +325,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 1",
 		"nivel":"BASICO",
 		"horas":20,
-		"nombreTemario":null,
-		"contenidoTemario":null
+		"temario":"ember.js_application_development_how-to.pdf"
 	},
 	{
 		"id":2,
@@ -311,8 +334,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 2",
 		"nivel":"INTERMEDIO",
 		"horas":40,
-		"nombreTemario":null,
-		"contenidoTemario":null
+		"temario":"ember.js_application_development_how-to.pdf"
 	},
 	{
 		"id":3,
@@ -321,8 +343,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 3",
 		"nivel":"INTERMEDIO",
 		"horas":60,
-		"nombreTemario":null,
-		"contenidoTemario":null
+		"temario":"ember.js_in_action_ch1.pdf"
 	},
 	{
 		"id":4,
@@ -331,8 +352,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 3",
 		"nivel":"AVANZADO",
 		"horas":120,
-		"nombreTemario":null,
-		"contenidoTemario":null
+		"temario":null
 	}
 ];
 
@@ -349,6 +369,13 @@ App.Tutor.FIXTURES =
 		"apellidos":"Palotes"
 	}
 ];
+
+
+
+$(document).ready(function(){
+	$(".numeric").numeric({ negative: false, decimal: false });
+});
+
 	</script>
 </body>
 </html>
