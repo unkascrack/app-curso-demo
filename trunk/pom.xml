@@ -194,7 +194,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>cursos</finalName>
+		<finalName>curso-demo</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
