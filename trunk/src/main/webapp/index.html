@@ -12,7 +12,6 @@
     	{{outlet}}   
     	{{partial 'footer'}}
 	</script>
-	
 
 	<script type="text/x-handlebars" data-template-name="_header">
 		<header>
@@ -37,11 +36,10 @@
 		<table border="1" cellspacing="0" cellpadding="0" width="80%">
 			<thead>
 				<tr>
-					<th width="20"></th>
 					<th>Titulo</th>
 					<th width="100">Nivel</th>
 					<th width="50">Horas</th>
-					<th width="50"></th>
+					<th width="50">Temario</th>
 					<th width="50"></th>
 				</tr>
 			</thead>
@@ -53,12 +51,15 @@
 				{{else}}
 					{{#each model}}
 						<tr>
-							<td>{{id}}</td>
 							<td>{{titulo}}</td>
 							<td>{{nivel}}</td>
 							<td>{{horas}}</td>
 							<td align="center">
-								{{temario}}
+								{{#if temario}}
+									{{#view App.ClickableView contentBinding='this'}}
+										<a href="#">Descargar</a>
+									{{/view}}
+								{{/if}}
 							</td>
 							<td align="center">
 								{{#linkTo cursos.edit this}}Editar{{/linkTo}}
@@ -69,17 +70,10 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="6">footer</td>
+					<td colspan="5">footer</td>
 				</tr>
 			</tfoot>
 		</table>
-		<br/>
-		<p>
-		ListView: http://emberjs.com/list-view/
-  		{{#collection Ember.ListView contentBinding="controller" height=200 rowHeight=20 width=500}}
-    		{{id}} {{titulo}} {{nivel}} {{horas}}
-  		{{/collection}}
-		</p>
 		</center>
 	</script>
 	
@@ -121,8 +115,6 @@
 					contentBinding='App.niveles'
 					valueBinding='nivel'
                     prompt='Seleccione el nivel'}}
-
-			
 		</p>
 
 		<p>
@@ -137,9 +129,7 @@
 
 		<p>
 			<label>Temario</label>
-			{{view Ember.TextField
-					type='upload' 
-					valueBinding='temario'}}
+			{{view App.UploadFileView name='temario' contentBinding='content'}}
 		</p>
 
 		<p>
@@ -152,11 +142,13 @@
 	<script src="resources/js/libs/handlebars-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/ember-1.0.0-rc.3.js"></script>
 	<script src="resources/js/libs/ember-data-1.0.0-rc.3.js"></script>
-	<script src="resources/js/libs/list-view.js"></script>
 	<script src="resources/js/libs/jquery.numeric.js"></script>
 	
 	<!-- <script src="resources/js/app.js"></script> -->
 	<script type="text/javascript">
+	
+
+	
 	
 /* CONFIGURATION ***************************************************************/
 App = Ember.Application.create({
@@ -170,21 +162,45 @@ Ember.onerror = function(error) {
 	alert(error);
 }
 
-/*
-Ember.onerror = function(error) {
-    Em.$.ajax('/error-notification', 'POST', {
-      stack: error.stack,
-      otherInformation: 'exception message'
-    });
-}
-*/
-
 Ember.TextField.reopen({
 	attributeBindings: ['required','min','max']
 });
 
+$(document).ready(function(){
+	$(".numeric").numeric({ negative: false, decimal: false });
+});
+
 Ember.Select.reopen({
 	attributeBindings: ['required']
+});
+
+/* VIEW ***************************************************************/
+App.ClickableView = Ember.View.extend({
+	content: null,
+	click: function(event) {
+		var url = 'docs/'+this.content.get('id')+'/'+this.content.get('temario');
+		window.open(url, '_blank');
+	}
+});
+
+App.UploadFileView = Ember.TextField.extend({
+	type: 'file',
+    attributeBindings: ['name'],
+    change: function(evt) {
+		var self = this;
+		var input = evt.target;
+		if (input.files && input.files[0]) {
+        	var reader = new FileReader();
+        	var that = this;
+        	reader.onload = function(e) {
+				var fileToUpload = e.srcElement.result;
+				var name = self.get('name');
+				self.get('controller').set(name, fileToUpload);
+				self.get('controller').get('content').set(name, input.files[0].name);
+        	}
+        	reader.readAsDataURL(input.files[0]);
+      	}
+	}
 });
 
 /* ROUTE ***************************************************************/
@@ -203,14 +219,14 @@ App.IndexRoute = Ember.Route.extend({
 
 App.CursosRoute = Ember.Route.extend({
 	model: function(params) {
-		//this.get('store.defaultTransaction').rollback();
+		this.get('store.defaultTransaction').rollback();
         return App.Curso.find();
     }
 });
 
 App.CursosIndexRoute = Ember.Route.extend({
 	model: function(params) {
-		//this.get('store.defaultTransaction').rollback();
+		this.get('store.defaultTransaction').rollback();
         return App.Curso.find();
     },
 	renderTemplate: function(){
@@ -219,6 +235,8 @@ App.CursosIndexRoute = Ember.Route.extend({
 });
 
 App.CursosNewRoute = Ember.Route.extend({
+	content: null,
+	temario: null,
 	renderTemplate: function(){
 		this.render('cursos/new', {into:'application'});
 	},
@@ -229,6 +247,8 @@ App.CursosNewRoute = Ember.Route.extend({
 });
 
 App.CursosEditRoute = Ember.Route.extend({
+	content: null,
+	temario: null,
 	renderTemplate: function(){
 		this.render('cursos/edit', {into:'application'});
 	},
@@ -247,10 +267,13 @@ App.CursosController = Ember.ArrayController.extend();
 App.CursosIndexController = Ember.ArrayController.extend();
 
 App.CursosNewController = Ember.ObjectController.extend({
+	content: null,
+	temario: null,
 	tutores: [],
 	save: function() {
+	    this.content.set('attachment', this.temario);
 		this.get('store.defaultTransaction').commit();
-		this.transitionToRoute('cursos');
+	    this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.content.deleteRecord();
@@ -260,8 +283,13 @@ App.CursosNewController = Ember.ObjectController.extend({
 });
 
 App.CursosEditController = Ember.ObjectController.extend({
+	content: null,
+	temario: null,
 	tutores: [],
 	save: function() {
+		if (this.temario != null) {
+			this.content.set('attachment', this.temario);
+		}
 		this.get('store.defaultTransaction').commit();
 		this.transitionToRoute('cursos');
 	},
@@ -312,7 +340,8 @@ App.Curso = DS.Model.extend({
 	titulo: DS.attr('string'),
 	nivel: DS.attr('string'),
 	horas: DS.attr('number'),
-	temario: DS.attr('string')
+	temario: DS.attr('string'),
+	attachment: DS.attr('string')
 });
 
 /* DATA TESTING ***************************************************************/
@@ -325,7 +354,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 1",
 		"nivel":"BASICO",
 		"horas":20,
-		"temario":"ember.js_application_development_how-to.pdf"
+		"temario":"temario1.txt"
 	},
 	{
 		"id":2,
@@ -334,7 +363,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 2",
 		"nivel":"INTERMEDIO",
 		"horas":40,
-		"temario":"ember.js_application_development_how-to.pdf"
+		"temario":"temario2.txt"
 	},
 	{
 		"id":3,
@@ -343,7 +372,7 @@ App.Curso.FIXTURES =
 		"titulo":"Curso 3",
 		"nivel":"INTERMEDIO",
 		"horas":60,
-		"temario":"ember.js_in_action_ch1.pdf"
+		"temario":null
 	},
 	{
 		"id":4,
@@ -369,13 +398,6 @@ App.Tutor.FIXTURES =
 		"apellidos":"Palotes"
 	}
 ];
-
-
-
-$(document).ready(function(){
-	$(".numeric").numeric({ negative: false, decimal: false });
-});
-
 	</script>
 </body>
 </html>
