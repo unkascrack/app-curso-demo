@@ -35,6 +35,9 @@ public class Curso implements Serializable {
     @Size(max = 250)
     private String temario;
 
+    @JSON(include = false)
+    private String attachment;
+
     public Long getId() {
         return id;
     }
@@ -94,6 +97,14 @@ public class Curso implements Serializable {
 
     public void setTemario(final String temario) {
         this.temario = temario;
+    }
+
+    public String getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(final String attachment) {
+        this.attachment = attachment;
     }
 
     @Override
