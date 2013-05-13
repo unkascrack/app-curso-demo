@@ -10,8 +10,12 @@ App.CursosNewController = Ember.ObjectController.extend({
 	tutores: [],
 	save: function() {
 	    this.content.set('attachment', this.temario);
+	    this.content.on('didCreate', this, function() {
+	    	this.transitionToRoute('cursos');
+	    });
+	    this.content.save();
 		this.get('store.defaultTransaction').commit();
-	    this.transitionToRoute('cursos');
+		//this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.content.deleteRecord();
@@ -26,8 +30,12 @@ App.CursosEditController = Ember.ObjectController.extend({
 	tutores: [],
 	save: function() {
 		this.content.set('attachment', this.temario);
+	    this.content.on('didUpdate', this, function() {
+	    	this.transitionToRoute('cursos');
+	    });
+	    this.content.save();
 		this.get('store.defaultTransaction').commit();
-		this.transitionToRoute('cursos');
+		//this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.get('store.defaultTransaction').rollback();
