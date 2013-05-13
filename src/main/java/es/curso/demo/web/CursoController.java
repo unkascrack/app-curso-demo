@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.curso.demo.model.Curso;
+import es.curso.demo.model.FiltroBusqueda;
 import es.curso.demo.service.CursoService;
 import es.curso.demo.service.JSONService;
 
@@ -31,7 +32,8 @@ public class CursoController {
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public String list(final Curso curso) {
+    public String list(final Curso curso, final FiltroBusqueda filtro) {
+        curso.setFiltro(filtro);
         final List<Curso> cursos = cursoService.findByCurso(curso);
         return jsonService.serialize("cursos", cursos);
     }
