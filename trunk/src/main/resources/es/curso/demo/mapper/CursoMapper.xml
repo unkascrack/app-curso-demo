@@ -53,30 +53,56 @@
 	</select>
 
 	<select id="selectByCurso" parameterType="map" resultMap="CursoMap" useCache="true">
-		SELECT  
-			CURSO.ID_CURSO,
-			CURSO.LG_ACTIVO,
-			CURSO.DE_TITULO,
-			CURSO.DE_NIVEL,
-			CURSO.NU_HORAS,
-			CURSO.DE_TEMARIO,
-			CURSO.ID_TUTOR
-		FROM 
-			TBG_CURSO CURSO
+		SELECT
+			QUERY2.*
+		FROM
+			(SELECT
+				<if test="filtro != null and filtro.pageSize != null">
+					/* FIRST_ROWS(${filtro.pageSize}) */
+				</if>
+				ROWNUM RNUM, 
+				QUERY1.*
+			FROM
+				(
+					SELECT  
+						CURSO.ID_CURSO,
+						CURSO.LG_ACTIVO,
+						CURSO.DE_TITULO,
+						CURSO.DE_NIVEL,
+						CURSO.NU_HORAS,
+						CURSO.DE_TEMARIO,
+						CURSO.ID_TUTOR
+					FROM 
+						TBG_CURSO CURSO
+					<where>
+						<if test="activo != null">
+							LG_ACTIVO = #{activo}
+						</if>
+						<if test="titulo != null">
+							DE_TITULO = #{titulo}
+						</if>
+						<if test="nivel != null">
+							DE_NIVEL = #{nivel}
+						</if>
+						<if test="horas != null">
+							NU_HORAS = #{horas}
+						</if>
+					</where>
+					<if test="filtro != null and filtro.orderBy != null">
+						ORDER BY ${filtro.orderBy} ${filtro.orderSort}
+					</if>
+				) QUERY1
+			<if test="filtro != null and filtro.lastResult != null">
+				<![CDATA[	
+					WHERE ROWNUM <= ${filtro.lastResult}
+				]]>
+			</if>
+		) QUERY2
 		<where>
-			<if test="activo != null">
-				LG_ACTIVO = #{activo}
+			<if test="filtro != null and filtro.firstResult != null">
+				RNUM > ${firstResult}
 			</if>
-			<if test="titulo != null">
-				DE_TITULO = #{titulo}
-			</if>
-			<if test="nivel != null">
-				DE_NIVEL = #{nivel}
-			</if>
-			<if test="horas != null">
-				NU_HORAS = #{horas}
-			</if>
-		</where>
+		</where>			
 	</select>
 	
 	<insert id="insert" parameterType="Curso" flushCache="true">
