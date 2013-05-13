@@ -14,12 +14,14 @@ App.CursosNewController = Ember.ObjectController.extend({
 	    	this.transitionToRoute('cursos');
 	    });
 	    this.content.save();
-		this.get('store.defaultTransaction').commit();
+	    this.get('store').commit();
+		//this.get('store.defaultTransaction').commit();
 		//this.transitionToRoute('cursos');
 	},
 	cancel: function() {
 		this.content.deleteRecord();
-		this.get('store.defaultTransaction').commit();
+		this.get('store').commit();
+		//this.get('store.defaultTransaction').commit();
 		this.transitionToRoute('cursos');
 	}
 });
@@ -34,10 +36,12 @@ App.CursosEditController = Ember.ObjectController.extend({
 	    	this.transitionToRoute('cursos');
 	    });
 	    this.content.save();
-		this.get('store.defaultTransaction').commit();
+	    this.get('store').commit();
+		//this.get('store.defaultTransaction').commit();
 		//this.transitionToRoute('cursos');
 	},
 	cancel: function() {
+		//this.get('transaction').rollback();
 		this.get('store.defaultTransaction').rollback();
 		this.transitionToRoute('cursos');
 	}
