@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 	<meta charset="utf-8">
-	<title>Ember Starter Kit</title>
+	<title>Demo - Catalogo de Cursos</title>
 	<link rel="stylesheet" href="resources/css/normalize.css">
 	<link rel="stylesheet" href="resources/css/style.css">
 </head>
@@ -87,55 +87,52 @@
 	
 	<script type="text/x-handlebars" data-template-name="cursos/_form">
 		<h2>EDICIÓN CURSO</h2>
-		<p>
-			<label>Activo</label>
-			{{view Ember.Checkbox checkedBinding='activo'}}
-		</p>
 
-		<p>
-			<label>Profesor</label>
-			{{view Ember.Select
+		<table cellspacing="3">
+		<tr>
+			<td>Activo</td>
+			<td>{{view Ember.Checkbox checkedBinding='activo'}}</td>
+		</tr>	
+		<tr>
+			<td>Profesor</td>
+			<td>
+				{{view Ember.Select
                     contentBinding='controller.tutores'
 					optionValuePath='content.id'
   					optionLabelPath='content.nombreCompleto'
 					selectionBinding='tutor'
                     prompt='Seleccione un tutor'
-			}}
-		</p>
-
-		<p>
-			<label>Titulo</label>
-			{{view Ember.TextField 
-				valueBinding='titulo'}}
-		</p>
-
-		<p>
-			<label>Nivel</label>
-			{{view Ember.Select 
+				}}
+			</td>
+		</tr>
+		<tr>
+			<td>Título</td>
+			<td>{{view Ember.TextField valueBinding='titulo'}}</td>
+		</tr>
+		<tr>
+			<td>Nivel</td>
+			<td>
+				{{view Ember.Select 
 					contentBinding='App.niveles'
 					valueBinding='nivel'
                     prompt='Seleccione el nivel'}}
-		</p>
-
-		<p>
-			<label>Horas</label>
-			{{view Ember.TextField
-					min='0'
-					max='500'
-					class='numeric'
-					type='number' 
-					valueBinding='horas'}}
-		</p>
-
-		<p>
-			<label>Temario</label>
-			{{view App.UploadFileView name='temario' contentBinding='content'}}
-		</p>
-
-		<p>
-			<button {{action save}}>Guardar</button>
-			<button {{action cancel}}>Cancelar</button>
-		</p>
+			</td>
+		</tr>
+		<tr>
+			<td>Horas</td>
+			<td>{{view Ember.TextField min='0' max='500' class='numeric' type='number' valueBinding='horas'}}</td>
+		</tr>
+		<tr>
+			<td>Temario</td>
+			<td>{{view App.UploadFileView name='temario' contentBinding='content'}}</td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center">
+				<button {{action save}}>Guardar</button>
+				<button {{action cancel}}>Cancelar</button>
+			</td>
+		</tr>
+		</table>
 	</script>
 	
 	<script src="resources/js/libs/jquery-1.9.1.js"></script>
@@ -220,14 +217,14 @@ App.IndexRoute = Ember.Route.extend({
 App.CursosRoute = Ember.Route.extend({
 	model: function(params) {
 		this.get('store.defaultTransaction').rollback();
-        return App.Curso.find();
+        return App.Curso.find({ activo: true });
     }
 });
 
 App.CursosIndexRoute = Ember.Route.extend({
 	model: function(params) {
 		this.get('store.defaultTransaction').rollback();
-        return App.Curso.find();
+		return App.Curso.find({ activo: true });
     },
 	renderTemplate: function(){
 		this.render('cursos', {into:'application'});
