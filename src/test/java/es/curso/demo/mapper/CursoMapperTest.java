@@ -1,5 +1,7 @@
 package es.curso.demo.mapper;
 
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -50,6 +52,34 @@ public class CursoMapperTest {
         curso.setActivo(true);
         final Integer nuCursos = cursoMapper.selectCountByCurso(curso);
         Assert.assertTrue(nuCursos > 0);
+    }
+
+    @Test
+    public void testSelectByCursoNull() {
+        final List<Curso> cursos = cursoMapper.selectByCurso(null);
+        Assert.assertFalse(cursos.isEmpty());
+    }
+
+    @Test
+    public void testSelectByCursoEmpty() {
+        final List<Curso> cursos = cursoMapper.selectByCurso(new Curso());
+        Assert.assertFalse(cursos.isEmpty());
+    }
+
+    @Test
+    public void testSelectByCursoFilterNoActivo() {
+        final Curso curso = new Curso();
+        curso.setActivo(false);
+        final List<Curso> cursos = cursoMapper.selectByCurso(curso);
+        Assert.assertTrue(cursos.isEmpty());
+    }
+
+    @Test
+    public void testSelectByCursoFilterActivo() {
+        final Curso curso = new Curso();
+        curso.setActivo(true);
+        final List<Curso> cursos = cursoMapper.selectByCurso(curso);
+        Assert.assertFalse(cursos.isEmpty());
     }
 
     @Test

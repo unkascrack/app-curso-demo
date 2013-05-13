@@ -38,6 +38,9 @@ public class Curso implements Serializable {
     @JSON(include = false)
     private String attachment;
 
+    @JSON(include = false)
+    private FiltroBusqueda filtro;
+
     public Long getId() {
         return id;
     }
@@ -105,6 +108,13 @@ public class Curso implements Serializable {
 
     public void setAttachment(final String attachment) {
         this.attachment = attachment;
+    }
+
+    public FiltroBusqueda getFiltro() {
+        if (filtro == null) {
+            filtro = new FiltroBusqueda();
+        }
+        return filtro;
     }
 
     @Override
