@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.curso.demo.ext.StringEscapeUtils;
 import es.curso.demo.mapper.CursoMapper;
 import es.curso.demo.model.Curso;
 
@@ -71,6 +72,7 @@ public class CursoService {
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = { IOException.class })
     public void insert(final Curso curso) throws IOException {
+        curso.setTemario(StringEscapeUtils.escapeFileName(curso.getTemario()));
         cursoMapper.insert(curso);
         saveTemario(curso);
     }
@@ -81,6 +83,7 @@ public class CursoService {
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED, rollbackFor = { IOException.class })
     public void update(final Curso curso) throws IOException {
+        curso.setTemario(StringEscapeUtils.escapeFileName(curso.getTemario()));
         cursoMapper.update(curso);
         saveTemario(curso);
     }
