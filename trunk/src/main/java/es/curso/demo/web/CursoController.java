@@ -33,7 +33,9 @@ public class CursoController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public String list(final Curso curso, final FiltroBusqueda filtro) {
-        curso.setFiltro(filtro);
+        if (curso != null) {
+            curso.setFiltro(filtro);
+        }
         final List<Curso> cursos = cursoService.findByCurso(curso);
         return jsonService.serialize("cursos", cursos);
     }
