@@ -6,21 +6,12 @@ App.ClickableView = Ember.View.extend({
 	}
 });
 
-App.UploadFileView = Ember.TextField.extend({
-	type: 'file',
-    attributeBindings: ['name'],
-    change: function(evt) {
-		var self = this;
-		var input = evt.target;
-		if (input.files && input.files[0]) {
-        	var reader = new FileReader();
-        	reader.onload = function(e) {
-				var fileToUpload = e.srcElement.result;
-				var name = self.get('name');
-				self.get('controller').set(name, fileToUpload);
-				self.get('controller').get('content').set(name, input.files[0].name);
-        	};
-        	reader.readAsDataURL(input.files[0]);
-      	}
+App.SorterView = Ember.View.extend({
+	content: null,
+	column: null,
+	click: function(event) {
+		this.get('controller').set('orderBy', this.column);
+		var orderSort = this.get('controller').get('orderSort');
+		this.get('controller').set('orderSort', !orderSort);
 	}
 });

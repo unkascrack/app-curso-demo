@@ -11,10 +11,12 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.CursosRoute = Ember.Route.extend({
-	model: function(params) {
+	setupController: function(controller) {
 		this.get('store.defaultTransaction').rollback();
-        return App.Curso.find({ activo: true });
-    }
+		var orderBy = controller.get('orderBy');
+		var orderSort = controller.get('orderSort');
+		controller.set('content', App.Curso.find({ activo: true, orderBy: orderBy, orderSort: orderSort}));
+	}
 });
 
 App.CursosNewRoute = Ember.Route.extend({
