@@ -12,6 +12,7 @@ App.IndexRoute = Ember.Route.extend({
 
 App.CursosRoute = Ember.Route.extend({
 	model: function(params) {
+		this.get('store.defaultTransaction').rollback();
         return App.Curso.find({ activo: true });
     }
 });
