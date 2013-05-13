@@ -5,6 +5,8 @@ import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Tutor implements Serializable {
 
     private static final long serialVersionUID = -923931513142989933L;
@@ -40,7 +42,7 @@ public class Tutor implements Serializable {
     }
 
     public void setNombre(final String nombre) {
-        this.nombre = nombre;
+        this.nombre = StringUtils.stripToNull(nombre);
     }
 
     public String getApellidos() {
@@ -48,7 +50,7 @@ public class Tutor implements Serializable {
     }
 
     public void setApellidos(final String apellidos) {
-        this.apellidos = apellidos;
+        this.apellidos = StringUtils.stripToNull(apellidos);
     }
 
     @Override
