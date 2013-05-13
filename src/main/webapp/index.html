@@ -68,11 +68,6 @@
 					{{/each}}
 				{{/unless}}				
 			</tbody>
-			<tfoot>
-				<tr>
-					<td colspan="5">footer</td>
-				</tr>
-			</tfoot>
 		</table>
 		</center>
 	</script>
@@ -88,13 +83,13 @@
 	<script type="text/x-handlebars" data-template-name="cursos/_form">
 		<h2>EDICIÓN CURSO</h2>
 
-		<table cellspacing="3">
+		<table cellspacing="5" cellpadding="5">
 		<tr>
-			<td>Activo</td>
+			<td align="right">Activo</td>
 			<td>{{view Ember.Checkbox checkedBinding='activo'}}</td>
 		</tr>	
 		<tr>
-			<td>Profesor</td>
+			<td align="right">Profesor</td>
 			<td>
 				{{view Ember.Select
                     contentBinding='controller.tutores'
@@ -106,11 +101,11 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Título</td>
+			<td align="right">Título</td>
 			<td>{{view Ember.TextField valueBinding='titulo'}}</td>
 		</tr>
 		<tr>
-			<td>Nivel</td>
+			<td align="right">Nivel</td>
 			<td>
 				{{view Ember.Select 
 					contentBinding='App.niveles'
@@ -119,11 +114,11 @@
 			</td>
 		</tr>
 		<tr>
-			<td>Horas</td>
+			<td align="right">Horas</td>
 			<td>{{view Ember.TextField min='0' max='500' class='numeric' type='number' valueBinding='horas'}}</td>
 		</tr>
 		<tr>
-			<td>Temario</td>
+			<td align="right">Temario</td>
 			<td>{{view App.UploadFileView name='temario' contentBinding='content'}}</td>
 		</tr>
 		<tr>
