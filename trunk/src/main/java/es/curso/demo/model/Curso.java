@@ -7,6 +7,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
+
 import flexjson.JSON;
 
 public class Curso implements Serializable {
@@ -75,7 +77,7 @@ public class Curso implements Serializable {
     }
 
     public void setTitulo(final String titulo) {
-        this.titulo = titulo;
+        this.titulo = StringUtils.stripToNull(titulo);
     }
 
     public Nivel getNivel() {
@@ -108,6 +110,10 @@ public class Curso implements Serializable {
 
     public void setAttachment(final String attachment) {
         this.attachment = attachment;
+    }
+
+    public void setFiltro(final FiltroBusqueda filtro) {
+        this.filtro = filtro;
     }
 
     public FiltroBusqueda getFiltro() {
