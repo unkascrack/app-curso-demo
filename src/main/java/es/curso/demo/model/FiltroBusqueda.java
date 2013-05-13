@@ -1,5 +1,7 @@
 package es.curso.demo.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class FiltroBusqueda {
 
     private Integer page;
@@ -36,7 +38,7 @@ public class FiltroBusqueda {
     }
 
     public void setOrderBy(final String orderBy) {
-        this.orderBy = orderBy;
+        this.orderBy = StringUtils.stripToNull(orderBy);
     }
 
     public Boolean getOrderSort() {
