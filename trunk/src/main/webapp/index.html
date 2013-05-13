@@ -36,9 +36,19 @@
 		<table border="1" cellspacing="0" cellpadding="5" width="80%">
 			<thead>
 				<tr>
-					<th>Título</th>
-					<th width="100">Nivel</th>
-					<th width="50">Horas</th>
+					<th>
+						{{#view App.SorterView column='de_titulo'}}
+							<a href="#">Título</a>
+						{{/view}}
+					</th>
+					<th width="100">
+						{{#view App.SorterView column='de_nivel'}}
+							<a href="#">Nivel</a>
+						{{/view}}
+					<th width="50">
+						{{#view App.SorterView column='nu_horas'}}
+							<a href="#">Horas</a>
+						{{/view}}
 					<th width="50">Temario</th>
 					<th width="50"></th>
 				</tr>

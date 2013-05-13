@@ -1,8 +1,11 @@
 App.IndexController = Ember.ArrayController.extend();
 
-App.CursosController = Ember.ArrayController.extend();
+App.CursosController = Ember.ArrayController.extend({
+	content: [],
+	orderSort: false,
+	orderBy: null
+});
 
-App.CursosIndexController = Ember.ArrayController.extend();
 
 App.CursosNewController = Ember.ObjectController.extend({
 	content: null,
