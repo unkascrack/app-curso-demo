@@ -32,7 +32,7 @@ public class CursoControllerTest {
 
     @Test
     public void testListNotNull() {
-        final String response = controller.list(null, null);
+        final String response = controller.list(null);
         Assert.assertFalse(response.isEmpty());
     }
 
