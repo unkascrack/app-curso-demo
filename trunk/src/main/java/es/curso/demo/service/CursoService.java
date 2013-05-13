@@ -50,15 +50,19 @@ public class CursoService {
     }
 
     /**
-     * @param page
-     * @param size
-     * @param orderBy
-     * @param orderType
+     * @param curso
      * @return
      */
-    public List<Curso> selectByActivo(final Integer page, final Integer size, final String orderBy,
-            final Boolean orderType) {
-        return cursoMapper.selectByActivo(page, size, orderBy, orderType);
+    public List<Curso> findByCurso(final Curso curso) {
+        return cursoMapper.selectByCurso(curso);
+    }
+
+    /**
+     * @param curso
+     * @return
+     */
+    public Integer findTotalByCurso(final Curso curso) {
+        return cursoMapper.selectCountByCurso(curso);
     }
 
     /**

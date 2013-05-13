@@ -15,7 +15,7 @@ public class Curso implements Serializable {
 
     private Long id;
 
-    private boolean activo = false;
+    private Boolean activo;
 
     @JSON(include = true)
     private Tutor tutor;
@@ -46,11 +46,11 @@ public class Curso implements Serializable {
         this.id = id;
     }
 
-    public boolean isActivo() {
+    public Boolean isActivo() {
         return activo;
     }
 
-    public void setActivo(final boolean activo) {
+    public void setActivo(final Boolean activo) {
         this.activo = activo;
     }
 

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import es.curso.demo.model.Curso;
@@ -32,11 +31,8 @@ public class CursoController {
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public String list(@RequestParam(defaultValue = "1") final Integer page,
-            @RequestParam(defaultValue = "10") final Integer size,
-            @RequestParam(defaultValue = "titulo") final String orderBy,
-            @RequestParam(defaultValue = "false") final Boolean orderType) {
-        final List<Curso> cursos = cursoService.selectByActivo(page, size, orderBy, orderType);
+    public String list(final Curso curso) {
+        final List<Curso> cursos = cursoService.findByCurso(curso);
         return jsonService.serialize("cursos", cursos);
     }
 
