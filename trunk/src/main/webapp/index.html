@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 	<meta charset="utf-8">
-	<title>Demo - Catalogo de Cursos</title>
+	<title>Demo - Catálogo de Cursos</title>
 	<link rel="stylesheet" href="resources/css/normalize.css">
 	<link rel="stylesheet" href="resources/css/style.css">
 </head>
@@ -15,7 +15,7 @@
 
 	<script type="text/x-handlebars" data-template-name="_header">
 		<header>
-			<h1>Catálogo de Cursos</h1>
+			<h1>{{#linkTo index}}Catálogo de Cursos{{/linkTo}}</h1>
 		</header>
 		<hr/>
 	</script>
@@ -33,7 +33,7 @@
 		{{#linkTo cursos.new}}Nuevo{{/linkTo}}
 
 		<center>
-		<table border="1" cellspacing="0" cellpadding="0" width="80%">
+		<table border="1" cellspacing="0" cellpadding="5" width="80%">
 			<thead>
 				<tr>
 					<th>Título</th>
