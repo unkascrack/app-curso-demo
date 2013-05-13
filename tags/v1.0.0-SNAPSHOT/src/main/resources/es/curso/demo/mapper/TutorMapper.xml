@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="es.curso.demo.mapper.TutorMapper">
+
+	<cache flushInterval="3600000" readOnly="true"/>
+
+	<resultMap id="TutorMap" type="Tutor">
+		<id property="id" column="ID_TUTOR"/>
+		<result property="nombre" column="DE_NOMBRE"/>
+		<result property="apellidos" column="DE_APELLIDOS"/>
+	</resultMap>
+
+	<select id="selectById" parameterType="Long" resultMap="TutorMap" useCache="true">
+		SELECT
+			ID_TUTOR,
+			DE_NOMBRE,
+			DE_APELLIDOS
+		FROM
+			TBG_TUTOR
+		WHERE
+			ID_TUTOR = #{value,jdbcType=NUMERIC}
+	</select>
+
+	<select id="selectAll" resultMap="TutorMap" useCache="true">
+		SELECT
+			ID_TUTOR,
+			DE_NOMBRE,
+			DE_APELLIDOS
+		FROM
+			TBG_TUTOR
+		ORDER BY
+			DE_NOMBRE, DE_APELLIDOS
+	</select>
+</mapper>

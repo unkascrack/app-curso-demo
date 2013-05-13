@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="es.curso.demo.mapper.CursoMapper">
+
+	<cache flushInterval="3600000" readOnly="true"/>
+
+	<resultMap id="CursoMap" type="Curso">
+		<id property="id" column="ID_CURSO"/>
+		<result property="activo" column="LG_ACTIVO"/>
+		<result property="titulo" column="DE_TITULO"/>
+		<result property="nivel" column="DE_NIVEL"/>
+		<result property="horas" column="NU_HORAS"/>
+		<result property="temario" column="DE_TEMARIO"/>
+		<association property="tutor" javaType="Tutor" resultMap="es.curso.demo.mapper.TutorMapper.TutorMap"/>
+	</resultMap>
+	
+	<select id="selectById" parameterType="Long" resultMap="CursoMap" useCache="true">
+		SELECT  
+			CURSO.ID_CURSO,
+			CURSO.LG_ACTIVO,
+			CURSO.DE_TITULO,
+			CURSO.DE_NIVEL,
+			CURSO.NU_HORAS,
+			CURSO.DE_TEMARIO,
+			CURSO.ID_TUTOR
+		FROM 
+			TBG_CURSO CURSO
+		WHERE
+			CURSO.ID_CURSO = #{value,jdbcType=NUMERIC}
+	</select>
+	
+	<select id="selectCountByCurso" parameterType="Curso" resultType="Integer" useCache="true">
+		SELECT  
+			COUNT(ID_CURSO)
+		FROM 
+			TBG_CURSO
+		<where>
+			<if test="activo != null">
+				LG_ACTIVO = #{activo}
+			</if>
+			<if test="titulo != null">
+				DE_TITULO = #{titulo}
+			</if>
+			<if test="nivel != null">
+				DE_NIVEL = #{nivel}
+			</if>
+			<if test="horas != null">
+				NU_HORAS = #{horas}
+			</if>
+		</where>  
+	</select>
+
+	<select id="selectByCurso" parameterType="map" resultMap="CursoMap" useCache="true">
+		SELECT
+			QUERY2.*
+		FROM
+			(SELECT
+				<if test="filtro != null and filtro.pageSize != null">
+					/* FIRST_ROWS(${filtro.pageSize}) */
+				</if>
+				ROWNUM RNUM, 
+				QUERY1.*
+			FROM
+				(
+					SELECT  
+						CURSO.ID_CURSO,
+						CURSO.LG_ACTIVO,
+						CURSO.DE_TITULO,
+						CURSO.DE_NIVEL,
+						CURSO.NU_HORAS,
+						CURSO.DE_TEMARIO,
+						CURSO.ID_TUTOR
+					FROM 
+						TBG_CURSO CURSO
+					<where>
+						<if test="activo != null">
+							LG_ACTIVO = #{activo}
+						</if>
+						<if test="titulo != null">
+							DE_TITULO = #{titulo}
+						</if>
+						<if test="nivel != null">
+							DE_NIVEL = #{nivel}
+						</if>
+						<if test="horas != null">
+							NU_HORAS = #{horas}
+						</if>
+					</where>
+					<if test="filtro != null and filtro.orderBy != null">
+						ORDER BY ${filtro.orderBy} ${filtro.orderType}
+					</if>
+				) QUERY1
+			<if test="filtro != null and filtro.lastResult != null">
+				<![CDATA[	
+					WHERE ROWNUM <= ${filtro.lastResult}
+				]]>
+			</if>
+		) QUERY2
+		<where>
+			<if test="filtro != null and filtro.firstResult != null">
+				RNUM > ${filtro.firstResult}
+			</if>
+		</where>			
+	</select>
+	
+	<insert id="insert" parameterType="Curso" flushCache="true">
+		<selectKey keyProperty="id" resultType="Long" order="BEFORE">
+			SELECT SEQ_CURSO.NEXTVAL FROM DUAL
+ 		</selectKey>
+		INSERT INTO TBG_CURSO
+		  (
+		    ID_CURSO,
+			LG_ACTIVO,
+			DE_TITULO,
+			DE_NIVEL,
+			NU_HORAS,
+			DE_TEMARIO,
+			ID_TUTOR
+		  )
+		  VALUES
+		  (
+		    #{id},
+		    #{activo},
+		    #{titulo,jdbcType=VARCHAR},
+		    #{nivel,jdbcType=VARCHAR},
+		    #{horas,jdbcType=NUMERIC},
+		    #{temario,jdbcType=VARCHAR},
+		    #{tutor.id,jdbcType=NUMERIC}
+		  )
+	</insert>
+	
+	<update id="update" parameterType="Curso" flushCache="true">
+		UPDATE 
+			TBG_CURSO 
+		SET
+			LG_ACTIVO = #{activo},
+			DE_TITULO = #{titulo,jdbcType=VARCHAR},
+			DE_NIVEL = #{nivel,jdbcType=VARCHAR},
+			NU_HORAS = #{horas,jdbcType=NUMERIC},
+			<if test="temario != null">
+				DE_TEMARIO = #{temario,jdbcType=VARCHAR},
+			</if>
+			ID_TUTOR = #{tutor.id,jdbcType=NUMERIC}
+		WHERE 
+			ID_CURSO = #{id,jdbcType=NUMERIC}
+	</update>
+	
+	<delete id="delete" parameterType="Curso" flushCache="true">
+		DELETE TBG_CURSO WHERE ID_CURSO = #{id,jdbcType=NUMERIC}
+	</delete>
+</mapper>
