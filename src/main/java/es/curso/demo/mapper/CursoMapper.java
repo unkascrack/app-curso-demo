@@ -2,8 +2,6 @@ package es.curso.demo.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
-
 import es.curso.demo.model.Curso;
 
 public interface CursoMapper {
@@ -16,17 +14,13 @@ public interface CursoMapper {
     /**
      * @return
      */
-    Integer selectCountByActivo();
+    Integer selectCountByCurso(Curso curso);
 
     /**
-     * @param page
-     * @param size
-     * @param orderBy
-     * @param orderType
+     * @param curso
      * @return
      */
-    List<Curso> selectByActivo(@Param("page") Integer page, @Param("size") Integer size,
-            @Param("orderBy") String orderBy, @Param("orderType") Boolean orderType);
+    List<Curso> selectByCurso(Curso curso);
 
     /**
      * @param curso

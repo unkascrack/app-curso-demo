@@ -4,6 +4,8 @@
 
 <mapper namespace="es.curso.demo.mapper.CursoMapper">
 
+	<cache flushInterval="3600000" readOnly="true"/>
+
 	<resultMap id="CursoMap" type="Curso">
 		<id property="id" column="ID_CURSO"/>
 		<result property="activo" column="LG_ACTIVO"/>
@@ -14,7 +16,7 @@
 		<association property="tutor" javaType="Tutor" resultMap="es.curso.demo.mapper.TutorMapper.TutorMap"/>
 	</resultMap>
 	
-	<select id="selectById" parameterType="Long" resultMap="CursoMap">
+	<select id="selectById" parameterType="Long" resultMap="CursoMap" useCache="true">
 		SELECT  
 			CURSO.ID_CURSO,
 			CURSO.LG_ACTIVO,
@@ -29,16 +31,28 @@
 			CURSO.ID_CURSO = #{value,jdbcType=NUMERIC}
 	</select>
 	
-	<select id="selectCountByActivo" resultType="Integer">
+	<select id="selectCountByCurso" parameterType="Curso" resultType="Integer" useCache="true">
 		SELECT  
 			COUNT(ID_CURSO)
 		FROM 
-			TBG_CURSO  
-		WHERE
-			LG_ACTIVO = 1
+			TBG_CURSO
+		<where>
+			<if test="activo != null">
+				LG_ACTIVO = #{activo}
+			</if>
+			<if test="titulo != null">
+				DE_TITULO = #{titulo}
+			</if>
+			<if test="nivel != null">
+				DE_NIVEL = #{nivel}
+			</if>
+			<if test="horas != null">
+				NU_HORAS = #{horas}
+			</if>
+		</where>  
 	</select>
 
-	<select id="selectByActivo" parameterType="map" resultMap="CursoMap">
+	<select id="selectByCurso" parameterType="map" resultMap="CursoMap" useCache="true">
 		SELECT  
 			CURSO.ID_CURSO,
 			CURSO.LG_ACTIVO,
@@ -49,11 +63,23 @@
 			CURSO.ID_TUTOR
 		FROM 
 			TBG_CURSO CURSO
-		WHERE
-			CURSO.LG_ACTIVO = 1
+		<where>
+			<if test="activo != null">
+				LG_ACTIVO = #{activo}
+			</if>
+			<if test="titulo != null">
+				DE_TITULO = #{titulo}
+			</if>
+			<if test="nivel != null">
+				DE_NIVEL = #{nivel}
+			</if>
+			<if test="horas != null">
+				NU_HORAS = #{horas}
+			</if>
+		</where>
 	</select>
 	
-	<insert id="insert" parameterType="Curso">
+	<insert id="insert" parameterType="Curso" flushCache="true">
 		<selectKey keyProperty="id" resultType="Long" order="BEFORE">
 			SELECT SEQ_CURSO.NEXTVAL FROM DUAL
  		</selectKey>
@@ -79,7 +105,7 @@
 		  )
 	</insert>
 	
-	<update id="update" parameterType="Curso">
+	<update id="update" parameterType="Curso" flushCache="true">
 		UPDATE 
 			TBG_CURSO 
 		SET
@@ -95,7 +121,7 @@
 			ID_CURSO = #{id,jdbcType=NUMERIC}
 	</update>
 	
-	<delete id="delete" parameterType="Curso">
+	<delete id="delete" parameterType="Curso" flushCache="true">
 		DELETE TBG_CURSO WHERE ID_CURSO = #{id,jdbcType=NUMERIC}
 	</delete>
 </mapper>

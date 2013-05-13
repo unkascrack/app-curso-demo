@@ -25,6 +25,34 @@ public class CursoMapperTest {
     }
 
     @Test
+    public void testSelectCountByCursoNull() {
+        final Integer nuCursos = cursoMapper.selectCountByCurso(null);
+        Assert.assertTrue(nuCursos > 0);
+    }
+
+    @Test
+    public void testSelectCountByCursoEmpty() {
+        final Integer nuCursos = cursoMapper.selectCountByCurso(new Curso());
+        Assert.assertTrue(nuCursos > 0);
+    }
+
+    @Test
+    public void testSelectCountByCursoFilterNoActivo() {
+        final Curso curso = new Curso();
+        curso.setActivo(false);
+        final Integer nuCursos = cursoMapper.selectCountByCurso(curso);
+        Assert.assertTrue(nuCursos == 0);
+    }
+
+    @Test
+    public void testSelectCountByCursoFilterActivo() {
+        final Curso curso = new Curso();
+        curso.setActivo(true);
+        final Integer nuCursos = cursoMapper.selectCountByCurso(curso);
+        Assert.assertTrue(nuCursos > 0);
+    }
+
+    @Test
     public void testInsert() {
         final Curso curso = new Curso();
         curso.setActivo(false);

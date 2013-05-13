@@ -4,13 +4,15 @@
 
 <mapper namespace="es.curso.demo.mapper.TutorMapper">
 
+	<cache flushInterval="3600000" readOnly="true"/>
+
 	<resultMap id="TutorMap" type="Tutor">
 		<id property="id" column="ID_TUTOR"/>
 		<result property="nombre" column="DE_NOMBRE"/>
 		<result property="apellidos" column="DE_APELLIDOS"/>
 	</resultMap>
 
-	<select id="selectById" parameterType="Long" resultMap="TutorMap">
+	<select id="selectById" parameterType="Long" resultMap="TutorMap" useCache="true">
 		SELECT
 			ID_TUTOR,
 			DE_NOMBRE,
@@ -21,7 +23,7 @@
 			ID_TUTOR = #{value,jdbcType=NUMERIC}
 	</select>
 
-	<select id="selectAll" resultMap="TutorMap">
+	<select id="selectAll" resultMap="TutorMap" useCache="true">
 		SELECT
 			ID_TUTOR,
 			DE_NOMBRE,
