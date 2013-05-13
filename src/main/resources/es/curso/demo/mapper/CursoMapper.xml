@@ -89,7 +89,7 @@
 						</if>
 					</where>
 					<if test="filtro != null and filtro.orderBy != null">
-						ORDER BY ${filtro.orderBy} ${filtro.orderSort}
+						ORDER BY ${filtro.orderBy} ${filtro.orderType}
 					</if>
 				) QUERY1
 			<if test="filtro != null and filtro.lastResult != null">
@@ -100,7 +100,7 @@
 		) QUERY2
 		<where>
 			<if test="filtro != null and filtro.firstResult != null">
-				RNUM > ${firstResult}
+				RNUM > ${filtro.firstResult}
 			</if>
 		</where>			
 	</select>
