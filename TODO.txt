@@ -1,10 +1,12 @@
 TODO:
- * Añadir validación a los campos, tanto javascript como JSR 303
- * Más tests
- * Revisar el refesh de la lista de cursos mostradas en ember, no se actualiza correctamente.
- * Permitir páginar la lista de cursos
- * Poder ordenar la lista de cursos por título
- * Empaquetar JS correctamente
- * Guardar configuración eclipse: clean y formatter, además de añadir plugin maven para su uso
+ * Añadir validación a los campos, tanto javascript como JSR 303.
+ * Tests JUnit y JavaScript.
+ * Permitir páginar la lista de cursos.
+ * Guardar configuración eclipse: clean y formatter, además de añadir plugin maven para su uso.
  * CSS
+ * Ocultar el nombre columna de ordenación, es más correcto introducir el nombre del campo del modelo y luego que en el servidor se haga el correcto mapeo de atributo del modelo a nombre columna base de datos.
+ * Construir un Servlet o Spring MVC Controlador que gestione las descargas bajo el contexto "/docs".
+ * Obtener la lista de niveles del servidor mediante petición REST.
+ * La ruta del contexto de los servicios REST se debe cargar dinámicamente desde el servidor.  
+   
  
