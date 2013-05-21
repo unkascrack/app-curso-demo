@@ -1,6 +1,21 @@
+
+
+
 App.Store = DS.Store.extend({
 	revision: 12,
-	adapter: 'DS.FixtureAdapter'
+	adapter: DS.FixtureAdapter.extend({
+		 queryFixtures: function(fixtures, query, type) {
+			 console.log('location '+location);
+			 console.log('location.host '+location.host);
+			 console.log('location.hostname '+location.hostname);
+			 console.log('location.href '+location.href);
+			 console.log('location.pathname '+location.pathname);
+			 console.log('location.port '+location.port);
+			 console.log('location.protocol '+location.protocol);
+			 console.log(query);
+			 return this.fixturesForType(type);
+		 }
+	})
 });
 
 App.Curso.FIXTURES = 
@@ -43,7 +58,7 @@ App.Curso.FIXTURES =
 		}
 	];
 
-	App.Tutor.FIXTURES = 
+App.Tutor.FIXTURES = 
 	[
 		{
 			"id":1,
