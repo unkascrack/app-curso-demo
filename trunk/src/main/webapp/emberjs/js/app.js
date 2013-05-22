@@ -13,10 +13,6 @@ Ember.TextField.reopen({
 	attributeBindings: ['required','min','max']
 });
 
-$(document).ready(function(){
-	$(".numeric").numeric({ negative: false, decimal: false });
-});
-
 Ember.Select.reopen({
 	attributeBindings: ['required']
 });
