@@ -15,7 +15,7 @@ App.CursosRoute = Ember.Route.extend({
 		this.get('store.defaultTransaction').rollback();
 		var orderBy = controller.get('orderBy');
 		var orderSort = controller.get('orderSort');
-		controller.set('content', App.Curso.find({ 'activo': true, 'filtro.orderBy': orderBy, 'filtro.orderSort': orderSort}));
+		controller.set('content', App.Curso.find({activo: true, orderBy: orderBy, orderSort: orderSort}));
 	}
 });
 
