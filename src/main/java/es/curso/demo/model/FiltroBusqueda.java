@@ -1,13 +1,30 @@
 package es.curso.demo.model;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 
-public class FiltroBusqueda {
+import flexjson.JSON;
 
+public abstract class FiltroBusqueda implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    @JSON(include = false)
     private Integer page;
+    @JSON(include = false)
     private Integer pageSize;
+    @JSON(include = false)
     private String orderBy;
+    @JSON(include = false)
     private Boolean orderSort;
+
+    /**
+     * @return
+     */
+    @JSON(include = false)
+    abstract Map<String, String> getAttrToColumnConversion();
 
     public Integer getPage() {
         return page;
@@ -31,6 +48,10 @@ public class FiltroBusqueda {
 
     public Integer getLastResult() {
         return page != null && pageSize != null ? page - 1 + pageSize : null;
+    }
+
+    public String getOrderByColumn() {
+        return getAttrToColumnConversion().get(orderBy);
     }
 
     public String getOrderBy() {
