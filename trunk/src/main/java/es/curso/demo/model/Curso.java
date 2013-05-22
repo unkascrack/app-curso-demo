@@ -1,19 +1,31 @@
 package es.curso.demo.model;
 
-import java.io.Serializable;
+import java.util.Map;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 
 import flexjson.JSON;
 
-public class Curso implements Serializable {
+public final class Curso extends FiltroBusqueda {
 
     private static final long serialVersionUID = 7977276319395424712L;
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, String> ATTR_TO_COLUMN = new CaseInsensitiveMap();
+    static {
+        ATTR_TO_COLUMN.put("id", "id_curso");
+        ATTR_TO_COLUMN.put("activo", "lg_activo");
+        ATTR_TO_COLUMN.put("titulo", "de_titulo");
+        ATTR_TO_COLUMN.put("nivel", "de_nivel");
+        ATTR_TO_COLUMN.put("horas", "nu_horas");
+        ATTR_TO_COLUMN.put("temario", "de_temario");
+    }
 
     private Long id;
 
@@ -39,9 +51,6 @@ public class Curso implements Serializable {
 
     @JSON(include = false)
     private String attachment;
-
-    @JSON(include = false)
-    private FiltroBusqueda filtro;
 
     public Long getId() {
         return id;
@@ -112,15 +121,10 @@ public class Curso implements Serializable {
         this.attachment = attachment;
     }
 
-    public void setFiltro(final FiltroBusqueda filtro) {
-        this.filtro = filtro;
-    }
-
-    public FiltroBusqueda getFiltro() {
-        if (filtro == null) {
-            filtro = new FiltroBusqueda();
-        }
-        return filtro;
+    @JSON(include = false)
+    @Override
+    Map<String, String> getAttrToColumnConversion() {
+        return ATTR_TO_COLUMN;
     }
 
     @Override
@@ -158,4 +162,5 @@ public class Curso implements Serializable {
         return "Curso [activo=" + activo + ", tutor=" + tutor + ", titulo=" + titulo + ", nivel=" + nivel + ", horas="
                 + horas + ", temario=" + temario + "]";
     }
+
 }
