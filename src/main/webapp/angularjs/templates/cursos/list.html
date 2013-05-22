@@ -1,0 +1,40 @@
+<div>
+	<a href='#/cursos/new'>Nuevo</a>
+</div>
+
+<center ng-controller='ListCursoController'>	
+	<table border="1" cellspacing="0" cellpadding="5" width="80%">
+		<thead>
+			<tr>
+				<th>
+					<a href="#">Título</a>
+				</th>
+				<th width="100">
+					<a href="#">Nivel</a>
+				<th width="50">
+					<a href="#">Horas</a>
+				<th width="50">Temario</th>
+				<th width="50"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-show='cursosEmpty()'>
+				<td colspan="5" align="center">No hay ningún curso activo</td>
+			</tr>
+			<tr ng-hide='cursosEmpty()' ng-repeat='curso in cursos'>
+				<td ng-bind='curso.titulo'></td>
+				<td ng-bind='curso.nivel'></td>
+				<td>{{curso.horas}}</td>
+				<td align="center">
+					<a ng-show='curso.temario != null' ng-href='../docs/{{curso.id}}/{{curso.temario}}' target='_blank'>
+						Descargar
+					</a>
+				</td>
+				<td align="center">
+					<a ng-href='#/cursos/{{curso.id}}'>Consultar</a> |
+					<a ng-href='#/cursos/{{curso.id}}/edit'>Editar</a>
+				</td>
+			</tr>
+		</tbody>
+	</table> 
+</center>

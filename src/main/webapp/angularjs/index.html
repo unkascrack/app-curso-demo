@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" ng-app='myApp'>
 <head>
 	<meta charset="utf-8">
 	<title>Demo - Catálogo de Cursos</title>
@@ -10,6 +10,11 @@
 <body>
 	<h1>DEMO - CATÁLOGO DE CURSOS</h1>
 	<hr/>
+	
+	
+	<h2>LISTADO DE CURSOS</h2>
+	
+	<div ng-view></div>
 
 	<br/>
 	<a href="../index.html">Volver</a>
@@ -22,5 +27,111 @@
 	<script src="../js/jquery-ui-1.10.3.custom.min.js" type="text/javascript"></script>
 	
 	<script src="js/libs/angular.min.js" type="text/javascript"></script>
+	<script src="js/libs/angular-resource.min.js" type="text/javascript"></script>
+	<script src="js/libs/angular-cookies.min.js" type="text/javascript"></script>
+	<script src="js/libs/angular-sanitize.min.js" type="text/javascript"></script>
+	<script src="js/libs/angular-bootstrap.min.js" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		var myApp = angular.module('myApp', []);
+		
+		myApp.config(function($routeProvider) {
+			$routeProvider
+				.when('/cursos', {templateUrl:'templates/cursos/list.html'})
+				.when('/cursos/:id', {templateUrl:'templates/cursos/show.html'})
+				.when('/cursos/:id/edit', {templateUrl:'templates/cursos/edit.html'})
+				.when('/cursos/new', {templateUrl:'templates/cursos/new.html'})
+				.otherwise({redirectTo: '/cursos'});
+		});		
+		
+		// SERVICES
+		myApp.factory('Cursos', function($http) {
+			var cursos = {};
+			cursos.query = function() {
+				$http.get('../rest/cursos')
+					.success(function(date, status, headers, config) {
+						this.cursos = data;
+					});
+				//return mockCursos;
+			};
+			return cursos;
+		});
+
+		// CONTROLLERS
+		myApp.controller('ListCursoController', function($scope, $http, Cursos) {
+			//$scope.cursos = Cursos.query();
+			//$scope.cursos = mockCursos;
+			$http.get('../rest/cursos').success(function(data, status, headers, config){
+				$scope.cursos = data;
+			});
+			
+			/*
+			$scope.cursos = function() {
+				return Cursos.query();
+			};
+			*/
+			$scope.cursosEmpty = function() {
+				//var cursos = $scope.cursos();
+				var cursos = $scope.cursos;
+				return !cursos || cursos == null || cursos.length == 0;
+			};
+		});
+		
+		myApp.controller('')
+		
+		var mockCursos =  
+			[
+				{
+					"id":1,
+					"activo":true,
+					"tutor":1,
+					"titulo":"Curso 1",
+					"nivel":"BASICO",
+					"horas":20,
+					"temario":"temario1.txt"
+				},
+				{
+					"id":2,
+					"activo":true,
+					"tutor":1,
+					"titulo":"Curso 2",
+					"nivel":"INTERMEDIO",
+					"horas":40,
+					"temario":"temario2.txt"
+				},
+				{
+					"id":3,
+					"activo":true,
+					"tutor":1,
+					"titulo":"Curso 3",
+					"nivel":"INTERMEDIO",
+					"horas":60,
+					"temario":null
+				},
+				{
+					"id":4,
+					"activo":true,
+					"tutor":[2],
+					"titulo":"Curso 3",
+					"nivel":"AVANZADO",
+					"horas":120,
+					"temario":null
+				}
+			];
+
+		var mockTutores =  
+			[
+				{
+					"id":1,
+					"nombre":"Carlos",
+					"apellidos":"Alonso González"
+				},
+				{
+					"id":2,
+					"nombre":"Perico",
+					"apellidos":"Palotes"
+				}
+			];		
+	</script>
 </body>
 </html>
