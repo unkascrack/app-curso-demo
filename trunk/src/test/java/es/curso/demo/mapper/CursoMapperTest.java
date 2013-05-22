@@ -86,8 +86,8 @@ public class CursoMapperTest {
     public void testSelectByCursoFilterActivoOrder() {
         final Curso curso = new Curso();
         curso.setActivo(true);
-        curso.getFiltro().setOrderBy("de_titulo");
-        curso.getFiltro().setOrderSort(true);
+        curso.setOrderBy("titulo");
+        curso.setOrderSort(true);
         final List<Curso> cursos = cursoMapper.selectByCurso(curso);
         Assert.assertFalse(cursos.isEmpty());
     }
@@ -96,10 +96,10 @@ public class CursoMapperTest {
     public void testSelectByCursoFilterActivoPaginated() {
         final Curso curso = new Curso();
         curso.setActivo(true);
-        curso.getFiltro().setOrderBy("de_titulo");
-        curso.getFiltro().setOrderSort(true);
-        curso.getFiltro().setPage(1);
-        curso.getFiltro().setPageSize(10);
+        curso.setOrderBy("titulo");
+        curso.setOrderSort(true);
+        curso.setPage(1);
+        curso.setPageSize(10);
         final List<Curso> cursos = cursoMapper.selectByCurso(curso);
         Assert.assertFalse(cursos.isEmpty());
     }
