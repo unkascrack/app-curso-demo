@@ -1,7 +1,7 @@
 App.ClickableView = Ember.View.extend({
 	content: null,
 	click: function(event) {
-		var url = 'docs/'+this.content.get('id')+'/'+this.content.get('temario');
+		var url = getURL() + 'docs/'+this.content.get('id')+'/'+this.content.get('temario');
 		window.open(url, '_blank');
 	}
 });
