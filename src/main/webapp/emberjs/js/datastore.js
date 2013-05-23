@@ -2,7 +2,7 @@ App.Store = DS.Store.extend({
 	revision: 12,
 	adapter: DS.RESTAdapter.extend({
 		url: getURL(),
-		namespace: 'rest',
+		namespace: 'rest/flexjson',
 		bulkCommit: false,
 		serializer: DS.RESTSerializer.extend({
 			init: function() {
