@@ -3,10 +3,13 @@ package es.curso.demo.web.jackson;
 import java.io.IOException;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,16 +41,25 @@ public class CursoJacksonController {
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Curso create(final Curso curso) throws IOException {
-        cursoService.insert(curso);
+    public Curso create(@Valid final Curso curso, final BindingResult results) throws IOException {
+        if (results.hasErrors()) {
+            logger.warn("Errors " + results.getAllErrors());
+        } else {
+            cursoService.insert(curso);
+        }
         return curso;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = "application/json")
     @ResponseBody
-    public Curso update(@PathVariable final Long id, final Curso curso) throws IOException {
-        curso.setId(id);
-        cursoService.update(curso);
+    public Curso update(@PathVariable final Long id, @Valid final Curso curso, final BindingResult results)
+            throws IOException {
+        if (results.hasErrors()) {
+            logger.warn("Errors " + results.getAllErrors());
+        } else {
+            curso.setId(id);
+            cursoService.update(curso);
+        }
         return curso;
     }
 

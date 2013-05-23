@@ -31,8 +31,10 @@ public final class Curso extends FiltroBusqueda {
 
     private Long id;
 
+    @NotNull
     private Boolean activo;
 
+    @NotNull
     @JSON(include = true)
     private Tutor tutor;
 
