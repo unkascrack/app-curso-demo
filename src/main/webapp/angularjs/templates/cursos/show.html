@@ -1,1 +1,11 @@
-SHOW
+<h2>CURSO</h2>
+
+<div ng-controller='ShowCursoController'>
+	<p>ID: {{curso.id}}</p>
+	<p>ACTIVO: {{curso.activo}}</p>
+	<p>NIVEL: {{curso.nivel}}</p>
+	<p>TUTOR: {{curso.tutor.nombre}} {{curso.tutor.apellidos}}</p>
+	<p>TÍTULO: {{curso.titulo}}</p>
+	<p>HORAS: {{curso.horas}}</p>
+	<a ng-show='curso.temario != null' ng-href='../docs/{{curso.id}}/{{curso.temario}}' target='_blank'>{{curso.temario}}</a>
+</div>
