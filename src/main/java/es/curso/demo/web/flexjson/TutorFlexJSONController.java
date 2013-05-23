@@ -1,4 +1,4 @@
-package es.curso.demo.web;
+package es.curso.demo.web.flexjson;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ import es.curso.demo.model.Tutor;
 import es.curso.demo.service.JSONService;
 import es.curso.demo.service.TutorService;
 
-@RequestMapping("tutores")
+@RequestMapping("/flexjson/tutores")
 @Controller
-public class TutorController {
+public class TutorFlexJSONController {
 
-    static final Logger logger = LoggerFactory.getLogger(TutorController.class);
+    static final Logger logger = LoggerFactory.getLogger(TutorFlexJSONController.class);
 
     @Autowired
     private transient TutorService tutorService;

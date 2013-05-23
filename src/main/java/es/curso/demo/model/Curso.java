@@ -10,6 +10,8 @@ import javax.validation.constraints.Size;
 import org.apache.commons.collections.map.CaseInsensitiveMap;
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import flexjson.JSON;
 
 public final class Curso extends FiltroBusqueda {
@@ -50,6 +52,7 @@ public final class Curso extends FiltroBusqueda {
     private String temario;
 
     @JSON(include = false)
+    @JsonIgnore
     private String attachment;
 
     public Long getId() {
@@ -73,6 +76,7 @@ public final class Curso extends FiltroBusqueda {
     }
 
     @JSON(include = false, name = "tutor_id")
+    @JsonIgnore
     public Long getIdTutor() {
         return tutor != null ? tutor.getId() : null;
     }
@@ -121,7 +125,6 @@ public final class Curso extends FiltroBusqueda {
         this.attachment = attachment;
     }
 
-    @JSON(include = false)
     @Override
     Map<String, String> getAttrToColumnConversion() {
         return ATTR_TO_COLUMN;
