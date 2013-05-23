@@ -1,5 +1,7 @@
+<h2>LISTADO DE CURSOS</h2>
+
 <div>
-	<a href='#/cursos/new'>Nuevo</a>
+	<a ng-href='#/cursos/new'>Nuevo</a>
 </div>
 
 <center ng-controller='ListCursoController'>	
@@ -18,10 +20,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-show='cursosEmpty()'>
+			<tr ng-show='!cursos.length'>
 				<td colspan="5" align="center">No hay ningún curso activo</td>
 			</tr>
-			<tr ng-hide='cursosEmpty()' ng-repeat='curso in cursos'>
+			<tr ng-repeat='curso in cursos'>
 				<td ng-bind='curso.titulo'></td>
 				<td ng-bind='curso.nivel'></td>
 				<td>{{curso.horas}}</td>

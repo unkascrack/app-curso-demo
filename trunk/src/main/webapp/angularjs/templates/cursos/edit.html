@@ -1,1 +1,42 @@
-PRUEBA EDIT
+<h2>EDICIÓN CURSO</h2>
+
+<form name="editCursoForm" ng-submit="save()"> 
+	<table cellspacing="5" cellpadding="5">
+	<tr>
+		<td align="right">Activo</td>
+		<td><input type="checkbox" ng-model="curso.activo"></td>
+	</tr>	
+	<tr>
+		<td align="right">Profesor</td>
+		<td>
+			<select ng-model="curso.tutor.id" ng-controller="LitTutorController" ng-options="t.id as t.nombre + ' ' + t.apellidos for t in tutores"  required>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">Título</td>
+		<td><input type="text" ng-model="curso.titulo" required></td>
+	</tr>
+	<tr>
+		<td align="right">Nivel</td>
+		<td>
+			<select ng-model="curso.nivel" ng-controller="LitNivelController" ng-options="n as n for n in niveles" required>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td align="right">Horas</td>
+		<td><input type="number" ng-model="curso.horas" required></td>
+	</tr>
+	<tr>
+		<td align="right">Temario</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center">
+			<button ng-disabled="!editCursoForm.$valid">Guardar</button>
+			<a ng-href="#/cursos">Cancelar</a>
+		</td>
+	</tr>
+	</table>
+</form>
