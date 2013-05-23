@@ -78,7 +78,8 @@
 		var services = angular.module('myApp.services', ['ngResource']);
 		
 		services.factory('Curso', ['$resource', function($resource) {
-			return $resource('../rest/jackson/cursos/:id', {id: '@id'});
+			return $resource('../rest/jackson/cursos/:id', {id: '@id'}, 
+					{update: {method:'PUT'}});
 		}]);
 		
 		services.factory('Tutor', ['$resource', function($resource) {
@@ -132,7 +133,6 @@
 			$scope.curso = new Curso();
 			
 			$scope.save = function() {
-				alert('NewCursoController save');
 				$scope.curso.$save(function(curso) {
 					$location.path(curso.id);
 				});
@@ -153,12 +153,20 @@
 		}]);
 		
 		app.controller('EditCursoController', ['$scope', '$location', '$routeParams', 'Curso', function($scope, $location, $routeParams, Curso) {
-			$scope.curso = Curso.get({id:$routeParams.id});
-			
+			$scope.curso = Curso.get({id:$routeParams.id},
+					function success(data) {
+						console.log(data);
+						if (data.activo == null) {
+							alert('no data');
+							$location.path('/cursos');
+						}
+					},
+					function error(data) {
+						alert('error');
+					});
 			$scope.save = function() {
-				alert('EditCursoController save');
-				$scope.curso.$save(function(curso) {
-					$location.path(curso.id);
+				$scope.curso.$update(function() {
+					$location.path('/cursos');
 				});
 			};
 		}]);
