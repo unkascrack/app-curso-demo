@@ -5,18 +5,27 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import flexjson.JSON;
 
 public abstract class FiltroBusqueda implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @JsonIgnore
     @JSON(include = false)
     private Integer page;
+
+    @JsonIgnore
     @JSON(include = false)
     private Integer pageSize;
+
+    @JsonIgnore
     @JSON(include = false)
     private String orderBy;
+
+    @JsonIgnore
     @JSON(include = false)
     private Boolean orderSort;
 
@@ -42,14 +51,20 @@ public abstract class FiltroBusqueda implements Serializable {
         this.pageSize = pageSize;
     }
 
+    @JsonIgnore
+    @JSON(include = false)
     public Integer getFirstResult() {
         return page != null && pageSize != null ? (page - 1) * pageSize : null;
     }
 
+    @JsonIgnore
+    @JSON(include = false)
     public Integer getLastResult() {
         return page != null && pageSize != null ? page - 1 + pageSize : null;
     }
 
+    @JsonIgnore
+    @JSON(include = false)
     public String getOrderByColumn() {
         return getAttrToColumnConversion().get(orderBy);
     }
@@ -70,6 +85,8 @@ public abstract class FiltroBusqueda implements Serializable {
         this.orderSort = orderSort;
     }
 
+    @JsonIgnore
+    @JSON(include = false)
     public String getOrderType() {
         return orderSort != null && orderSort ? "DESC" : "ASC";
     }

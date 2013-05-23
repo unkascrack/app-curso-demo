@@ -1,4 +1,4 @@
-package es.curso.demo.web;
+package es.curso.demo.web.flexjson;
 
 import junit.framework.Assert;
 
@@ -10,10 +10,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring-config-test.xml" })
-public class TutorControllerTest {
+public class TutorFlexJSONControllerTest {
 
     @Autowired
-    private TutorController controller;
+    private TutorFlexJSONController controller;
 
     @Test
     public void testTutorControllerNotNull() {

@@ -1,4 +1,4 @@
-package es.curso.demo.web;
+package es.curso.demo.web.flexjson;
 
 import java.io.IOException;
 
@@ -17,10 +17,10 @@ import es.curso.demo.service.JSONService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring-config-test.xml" })
-public class CursoControllerTest {
+public class CursoFlexJSONControllerTest {
 
     @Autowired
-    private CursoController controller;
+    private CursoFlexJSONController controller;
 
     @Autowired
     private JSONService jsonService;
