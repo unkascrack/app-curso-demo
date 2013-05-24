@@ -33,6 +33,14 @@
 		<td></td>
 	</tr>
 	<tr>
+		<td align="right">Fecha</td>
+		<td>
+			<input id="dateField"
+				datepicker
+				ng-model="$parent.fecha">
+		</td>
+	</tr>
+	<tr>
 		<td colspan="2" align="center">
 			<button ng-disabled="!editCursoForm.$valid">Guardar</button>
 			<input type="button" ng-click="cancel()" value="Cancelar"/>
