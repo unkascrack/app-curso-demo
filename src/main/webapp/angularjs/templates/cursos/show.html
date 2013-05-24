@@ -8,4 +8,10 @@
 	<p>TÍTULO: {{curso.titulo}}</p>
 	<p>HORAS: {{curso.horas}}</p>
 	<a ng-show='curso.temario != null' ng-href='../docs/{{curso.id}}/{{curso.temario}}' target='_blank'>{{curso.temario}}</a>
+	
+	<p>
+		<button ng-click="edit()">Editar</button>
+		<button ng-click="remove()">Borrar</button>
+		<button ng-click="cancel()">Cancelar</button>
+	</p>
 </div>
