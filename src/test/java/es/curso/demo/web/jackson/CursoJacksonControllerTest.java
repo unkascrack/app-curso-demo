@@ -5,11 +5,13 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.easymock.EasyMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.validation.BindingResult;
 
 import es.curso.demo.model.Curso;
 import es.curso.demo.model.Nivel;
@@ -54,7 +56,7 @@ public class CursoJacksonControllerTest {
 
     @Test(expected = Exception.class)
     public void testCreateEmpty() throws IOException {
-        controller.create(new Curso());
+        controller.create(new Curso(), getBindingResult(true));
     }
 
     @Test
@@ -65,7 +67,12 @@ public class CursoJacksonControllerTest {
         curso.setHoras(10);
         curso.setNivel(Nivel.BASICO);
         curso.setTutor(new Tutor(1l));
-        controller.create(curso);
+        controller.create(curso, getBindingResult(false));
     }
 
+    private BindingResult getBindingResult(final boolean hasErrors) {
+        final BindingResult result = EasyMock.createMock(BindingResult.class);
+        EasyMock.expect(result.hasErrors()).andReturn(hasErrors);
+        return result;
+    }
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,7 +42,7 @@ public class CursoJacksonController {
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
-    public Curso create(@Valid final Curso curso, final BindingResult results) throws IOException {
+    public Curso create(@RequestBody @Valid final Curso curso, final BindingResult results) throws IOException {
         if (results.hasErrors()) {
             logger.warn("Errors " + results.getAllErrors());
         } else {
@@ -50,9 +51,9 @@ public class CursoJacksonController {
         return curso;
     }
 
-    @RequestMapping(value = "{id}", method = RequestMethod.PUT, produces = "application/json")
+    @RequestMapping(value = "{id}", method = { RequestMethod.PUT, RequestMethod.POST }, produces = "application/json")
     @ResponseBody
-    public Curso update(@PathVariable final Long id, @Valid final Curso curso, final BindingResult results)
+    public Curso update(@PathVariable final Long id, @RequestBody @Valid final Curso curso, final BindingResult results)
             throws IOException {
         if (results.hasErrors()) {
             logger.warn("Errors " + results.getAllErrors());
