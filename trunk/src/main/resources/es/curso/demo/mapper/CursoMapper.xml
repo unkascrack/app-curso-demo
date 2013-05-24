@@ -24,9 +24,13 @@
 			CURSO.DE_NIVEL,
 			CURSO.NU_HORAS,
 			CURSO.DE_TEMARIO,
-			CURSO.ID_TUTOR
+			
+			TUTOR.ID_TUTOR,
+			TUTOR.DE_NOMBRE,
+			TUTOR.DE_APELLIDOS
 		FROM 
 			TBG_CURSO CURSO
+			LEFT JOIN TBG_TUTOR TUTOR ON CURSO.ID_TUTOR = TUTOR.ID_TUTOR
 		WHERE
 			CURSO.ID_CURSO = #{value,jdbcType=NUMERIC}
 	</select>
@@ -148,6 +152,6 @@
 	</update>
 	
 	<delete id="delete" parameterType="Curso" flushCache="true">
-		DELETE TBG_CURSO WHERE ID_CURSO = #{id,jdbcType=NUMERIC}
+		DELETE FROM TBG_CURSO WHERE ID_CURSO = #{id,jdbcType=NUMERIC}
 	</delete>
 </mapper>
