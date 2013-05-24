@@ -42,18 +42,18 @@
 			TBG_CURSO
 		<where>
 			<if test="activo != null">
-				LG_ACTIVO = #{activo}
+				AND LG_ACTIVO = #{activo}
 			</if>
 			<if test="titulo != null">
-				DE_TITULO = #{titulo}
+				AND DE_TITULO = #{titulo}
 			</if>
 			<if test="nivel != null">
-				DE_NIVEL = #{nivel}
+				AND DE_NIVEL = #{nivel}
 			</if>
 			<if test="horas != null">
-				NU_HORAS = #{horas}
+				AND NU_HORAS = #{horas}
 			</if>
-		</where>  
+		</where> 
 	</select>
 
 	<select id="selectByCurso" parameterType="map" resultMap="CursoMap" useCache="true">
@@ -80,16 +80,16 @@
 						TBG_CURSO CURSO
 					<where>
 						<if test="activo != null">
-							LG_ACTIVO = #{activo}
+							AND LG_ACTIVO = #{activo}
 						</if>
 						<if test="titulo != null">
-							DE_TITULO = #{titulo}
+							AND DE_TITULO = #{titulo}
 						</if>
 						<if test="nivel != null">
-							DE_NIVEL = #{nivel}
+							AND DE_NIVEL = #{nivel}
 						</if>
 						<if test="horas != null">
-							NU_HORAS = #{horas}
+							AND NU_HORAS = #{horas}
 						</if>
 					</where>
 					<if test="orderByColumn != null">
