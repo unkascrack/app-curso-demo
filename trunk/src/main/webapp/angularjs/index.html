@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="../css/normalize.css">
 	<link rel="stylesheet" href="../css/style.css">
 	<link rel="stylesheet" href="../css/jquery-ui-1.10.3.custom.min.css">
+	<link rel="stylesheet" href="css/ng-grid.css">
 </head>
 <body>
 	<div loading>Loading...</div>
@@ -23,12 +24,27 @@
 	
 	<script src="js/libs/angular.min.js" type="text/javascript"></script>
 	<script src="js/libs/angular-resource.min.js" type="text/javascript"></script>
-	<script src="js/libs/angular-cookies.min.js" type="text/javascript"></script>
-	<script src="js/libs/angular-sanitize.min.js" type="text/javascript"></script>
-	<script src="js/libs/angular-bootstrap.min.js" type="text/javascript"></script>
+	<script src="js/libs/ng-grid-2.0.5.min.js" type="text/javascript"></script>
 	
 	<script type="text/javascript">
-		var app = angular.module('myApp', ['myApp.directives', 'myApp.services']);
+
+		function trim_nulls(data) {
+			var y;
+			for ( var x in data) {
+				y = data[x];
+				if (y === "null" || y === null || y === "" || typeof y === "undefined" || (y instanceof Object && Object.keys(y).length == 0)) {
+					delete data[x];
+				}
+				if (y instanceof Object) {
+					y = trim_nulls(y);
+				}
+			}
+			return data;
+		}
+	</script>
+	
+	<script type="text/javascript">
+		var app = angular.module('myApp', ['ngGrid', 'myApp.directives', 'myApp.services']);
 		
 		// ROUTES 
 		app.config(['$routeProvider', function($routeProvider) {
@@ -116,18 +132,74 @@
 	<script type="text/javascript">
 		// CONTROLLERS
  		app.controller('ListCursoController', ['$scope', 'CursoResource', function($scope, CursoResource) {
- 			$scope.activo;
- 			$scope.titulo;
- 			
- 			$scope.cursos = CursoResource.query();
+ 		    $scope.filterOptions = {
+	           activo: null,
+	           titulo: null
+			};
+		    $scope.pagingOptions = {
+		        pageSizes: [2, 5, 10],
+		        pageSize: 2,
+		        totalServerItems: 0,
+		        currentPage: 1
+		    };	
+		    $scope.setPagingData = function(data, page, pageSize){	
+		        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
+		        $scope.myData = pagedData;
+		        $scope.pagingOptions.totalServerItems = data.length;
+		        if (!$scope.$$phase) {
+		            $scope.$apply();
+		        }
+		    };
+		    $scope.getPagedDataAsync = function (filter, pageSize, page, orderBy, orderSort) {
+		        setTimeout(function () {
+		        	var params = filter || {};
+		        	params.pageSize = pageSize;
+		        	params.page = page;
+		        	params.orderBy = orderBy != null ? orderBy.field : '';
+		        	params.orderSort = orderSort == 'asc' ? true : false;
+		        	CursoResource.query(trim_nulls(params), function success(data) {
+		        		$scope.setPagingData(data,page,pageSize);
+		        	});
+		        }, 100);
+		    };
+			
+		    $scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage);
+			
+		    $scope.$watch('pagingOptions', function (newVal, oldVal) {
+		        if (newVal !== oldVal && (newVal.currentPage !== oldVal.currentPage || newVal.pageSize !== oldVal.pageSize)) {
+		        	if (newVal.pageSize !== oldVal.pageSize) {
+		        		$scope.pagingOptions.currentPage = 1;
+		        	}
+		        	$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.columns[0], $scope.sortInfo.directions[0]);
+		        }
+		    }, true);
+		    
  			$scope.filtrar = function() {
- 				var params = {};
- 				params.activo = $scope.activo || '';
- 				params.titulo = $scope.titulo || '';
- 				console.log('activo: '+$scope.activo);
- 				console.log(params);
- 				$scope.cursos = CursoResource.query(params);
+ 				if ($scope.pagingOptions.currentPage == 1) {
+ 					$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.columns[0], $scope.sortInfo.directions[0]);
+ 				}
+ 				else {
+ 					$scope.pagingOptions.currentPage = 1;
+ 				}
  			}
+ 			
+ 			$scope.sortInfo = {fields: [], columns: [], directions: []};
+ 			$scope.$watch('sortInfo', function (newVal, oldVal) {
+		        if (newVal !== oldVal) {
+		        	$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.columns[0], $scope.sortInfo.directions[0]);
+		        }
+ 		    }, true);
+			
+		    $scope.gridOptions = {
+		        data: 'myData',
+		        columnDefs: [{field:'activo', displayName:'Activo', sortable:false}, {field:'titulo', displayName:'Título'}, {field:'nivel', displayName:'Nivel'}, {field:'horas', displayName:'Horas'}, {field:'temario', displayName:'Temario'}],
+		        enablePaging: true,
+				showFooter: true,
+		        pagingOptions: $scope.pagingOptions,
+		        i18n: 'sp',
+		        useExternalSorting: true,
+		        sortInfo: $scope.sortInfo
+		    };
  		}]);
 		
 		app.controller('NewCursoController', ['$scope', '$location', 'CursoResource', function($scope, $location, CursoResource) {
@@ -135,7 +207,6 @@
 			
 			$scope.save = function() {
 				$scope.curso.$save(function(curso) {
-					console.log(curso.id);
 					$location.path('/cursos/'+curso.id);
 				});
 			};
