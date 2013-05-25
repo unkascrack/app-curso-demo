@@ -93,6 +93,20 @@ public class CursoMapperTest {
     }
 
     @Test
+    public void testSelectByCursoFilterPaginated() {
+        final Curso curso = new Curso();
+        curso.setPageSize(2);
+
+        curso.setPage(1);
+        final List<Curso> cursosPage1 = cursoMapper.selectByCurso(curso);
+        Assert.assertTrue(cursosPage1.size() == 2);
+
+        curso.setPage(2);
+        final List<Curso> cursosPage2 = cursoMapper.selectByCurso(curso);
+        Assert.assertTrue(cursosPage2.size() == 2);
+    }
+
+    @Test
     public void testSelectByCursoFilterActivoPaginated() {
         final Curso curso = new Curso();
         curso.setActivo(true);

@@ -60,7 +60,7 @@ public abstract class FiltroBusqueda implements Serializable {
     @JsonIgnore
     @JSON(include = false)
     public Integer getLastResult() {
-        return page != null && pageSize != null ? page - 1 + pageSize : null;
+        return page != null && pageSize != null ? (page - 1) * pageSize + pageSize : null;
     }
 
     @JsonIgnore
