@@ -133,32 +133,28 @@
 		// CONTROLLERS
  		app.controller('ListCursoController', ['$scope', 'CursoResource', function($scope, CursoResource) {
  		    $scope.filterOptions = {
-	           activo: null,
-	           titulo: null
+	           activo: undefined,
+	           titulo: undefined
 			};
 		    $scope.pagingOptions = {
 		        pageSizes: [2, 5, 10],
 		        pageSize: 2,
-		        totalServerItems: 0,
 		        currentPage: 1
 		    };	
-		    $scope.setPagingData = function(data, page, pageSize){	
-		        var pagedData = data.slice((page - 1) * pageSize, page * pageSize);
-		        $scope.myData = pagedData;
-		        $scope.pagingOptions.totalServerItems = data.length;
-		        if (!$scope.$$phase) {
-		            $scope.$apply();
-		        }
-		    };
 		    $scope.getPagedDataAsync = function (filter, pageSize, page, orderBy, orderSort) {
 		        setTimeout(function () {
-		        	var params = filter || {};
+		        	var params = {};
+		        	params.activo = filter.activo;
+		        	params.titulo = filter.titulo;
 		        	params.pageSize = pageSize;
 		        	params.page = page;
-		        	params.orderBy = orderBy != null ? orderBy.field : '';
-		        	params.orderSort = orderSort == 'asc' ? true : false;
+		        	params.orderBy = orderBy;
+		        	params.orderSort = orderSort == null ? null : orderSort.toLowerCase() == 'asc' ? true : false;
 		        	CursoResource.query(trim_nulls(params), function success(data) {
-		        		$scope.setPagingData(data,page,pageSize);
+		        		$scope.myData = data;
+		        		if (!$scope.$$phase) {
+				            $scope.$apply();
+				        }
 		        	});
 		        }, 100);
 		    };
@@ -170,23 +166,29 @@
 		        	if (newVal.pageSize !== oldVal.pageSize) {
 		        		$scope.pagingOptions.currentPage = 1;
 		        	}
-		        	$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.columns[0], $scope.sortInfo.directions[0]);
+		        	$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.fields[0], $scope.sortInfo.directions[0]);
 		        }
 		    }, true);
 		    
- 			$scope.filtrar = function() {
- 				if ($scope.pagingOptions.currentPage == 1) {
- 					$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.columns[0], $scope.sortInfo.directions[0]);
- 				}
- 				else {
- 					$scope.pagingOptions.currentPage = 1;
+ 			$scope.filtrar = function(activo, titulo) {
+ 				var oldVal = $scope.filterOptions;
+ 				if (oldVal.activo !== activo || oldVal.titulo !== titulo) {
+ 					$scope.filterOptions.activo = activo;
+ 					$scope.filterOptions.titulo = titulo;
+			        $scope.totalServerItems = 4;
+	 				if ($scope.pagingOptions.currentPage == 1) {
+	 					$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.fields[0], $scope.sortInfo.directions[0]);
+	 				}
+	 				else {
+	 					$scope.pagingOptions.currentPage = 1;
+	 				}
  				}
  			}
  			
  			$scope.sortInfo = {fields: [], columns: [], directions: []};
  			$scope.$watch('sortInfo', function (newVal, oldVal) {
 		        if (newVal !== oldVal) {
-		        	$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.columns[0], $scope.sortInfo.directions[0]);
+		        	$scope.getPagedDataAsync($scope.filterOptions, $scope.pagingOptions.pageSize, $scope.pagingOptions.currentPage, $scope.sortInfo.fields[0], $scope.sortInfo.directions[0]);
 		        }
  		    }, true);
 			
@@ -195,6 +197,8 @@
 		        columnDefs: [{field:'activo', displayName:'Activo', sortable:false}, {field:'titulo', displayName:'Título'}, {field:'nivel', displayName:'Nivel'}, {field:'horas', displayName:'Horas'}, {field:'temario', displayName:'Temario'}],
 		        enablePaging: true,
 				showFooter: true,
+ 				//TODO: buscar total items
+				totalServerItems: 4,
 		        pagingOptions: $scope.pagingOptions,
 		        i18n: 'sp',
 		        useExternalSorting: true,
