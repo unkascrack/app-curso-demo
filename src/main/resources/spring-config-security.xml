@@ -9,20 +9,23 @@
                         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <security:http create-session="never" auto-config="false" realm="MyService">
-        <security:intercept-url pattern="/rest/**" access="ROLE_REST"/>
-        <security:http-basic />
-        <security:logout />
+	<security:global-method-security secured-annotations="enabled"/>
+
+    <security:http entry-point-ref="restAuthenticationEntryPoint" pattern="/rest/secured/**" create-session="stateless" auto-config="false">
+        <security:custom-filter ref="authenticationTokenProcessingFilter" position="FORM_LOGIN_FILTER" />
+        
+        <security:intercept-url pattern="**" access="ROLE_REST"/>
+        <!-- 
+        <security:intercept-url pattern="**" access="ROLE_REST" method="POST"/>
+        <security:intercept-url pattern="**" access="ROLE_REST" method="PUT"/>
+        <security:intercept-url pattern="**" access="ROLE_REST" method="DELETE"/>
+         -->
+        
+        <security:logout invalidate-session="true" delete-cookies="JSESSIONID"/>
     </security:http>
-    
-    <!-- <security:global-method-security secured-annotations="enabled"/> -->
 
     <security:authentication-manager>
-        <security:authentication-provider>
-            <security:user-service>
-                <security:user name="admin" password="admin" authorities="ROLE_REST"/>
-            </security:user-service>
-        </security:authentication-provider>
+    	<security:authentication-provider ref="myAuthenticationProvider" />
     </security:authentication-manager>
     
 </beans>
