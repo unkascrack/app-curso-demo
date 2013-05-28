@@ -30,8 +30,17 @@ public class CursoJacksonControllerTest {
     }
 
     @Test
-    public void testListNotNull() {
-        final List<Curso> cursos = controller.list(null);
+    public void testSearchNuCursosNotNull() {
+        final Curso curso = new Curso();
+        curso.setTotal(true);
+        final Integer nuCursos = (Integer) controller.search(curso);
+        Assert.assertTrue(nuCursos > 0);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSearchListCursosNotNull() {
+        final List<Curso> cursos = (List<Curso>) controller.search(null);
         Assert.assertFalse(cursos.isEmpty());
     }
 
