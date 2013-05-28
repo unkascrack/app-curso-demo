@@ -130,13 +130,13 @@
 		var services = angular.module('myApp.services', ['ngResource']);
 		
 		services.factory('CursoResource', ['$resource', function($resource) {
-			return $resource(getURLEscaped() + 'rest/jackson/cursos/:id', 
+			return $resource(getURLEscaped() + 'rest/secured/jackson/cursos/:id', 
 					{id: '@id'},
 					{total: {method:'GET', params:{total:true}, isArray:false}});
 		}]);
 		
 		services.factory('TutorResource', ['$resource', function($resource) {
-			return $resource(getURLEscaped() + 'rest/jackson/tutores/:id', {id: '@id'});
+			return $resource(getURLEscaped() + 'rest/secured/jackson/tutores/:id', {id: '@id'});
 		}]);
 	</script>
 		
