@@ -1,69 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans:beans 
-	xmlns="http://www.springframework.org/schema/security"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xmlns:beans="http://www.springframework.org/schema/beans" 
-    xmlns:sec="http://www.springframework.org/schema/security" 
-    xsi:schemaLocation="
-    	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+ 
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:security="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <security:http create-session="never" auto-config="false" realm="MyService">
+        <security:intercept-url pattern="/rest/**" access="ROLE_REST"/>
+        <security:http-basic />
+        <security:logout />
+    </security:http>
     
-	<sec:http entry-point-ref="restAuthenticationEntryPoint" create-session="stateless">
-		<sec:intercept-url pattern="/rest/jackson/cursos/**" method="POST" access="isAuthenticated()" />
-		<sec:custom-filter ref="myFilter" position="FORM_LOGIN_FILTER"/>
-		<sec:logout/>
-	</sec:http>
+    <!-- <security:global-method-security secured-annotations="enabled"/> -->
 
-	<beans:bean id="myFilter" class="org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter">
-		<beans:property name="authenticationManager" ref="authenticationManager" />
-		<beans:property name="authenticationSuccessHandler" ref="mySuccessHandler" />
-	</beans:bean>
-	<beans:bean id="mySuccessHandler" class="es.curso.demo.web.security.RestAuthenticationEntryPoint" />
-
-	<sec:authentication-manager id="authenticationManager">
-		<sec:authentication-provider>
-			<sec:user-service>
-				<sec:user name="admin" password="admin" authorities="ROLE_ADMIN"/>
-				<sec:user name="user" password="user" authorities="ROLE_USER"/>
-			</sec:user-service>
-		</sec:authentication-provider>
-	</sec:authentication-manager>
-
-</beans:beans>
-
-<!-- 
-
-https://github.com/eugenp/REST/blob/master/sec/src/main/resources/secSecurityConfig.xml
-
-<?xml version="1.0" encoding="UTF-8"?>
-<beans:beans xmlns="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:sec="http://www.springframework.org/schema/security"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
-
-	<http create-session="stateless" entry-point-ref="digestEntryPoint">
-		<http-basic />
-
-		<custom-filter ref="digestFilter" after="BASIC_AUTH_FILTER" />
-	</http>
-
-	<global-method-security secured-annotations="enabled" />
-
-	<beans:bean id="digestFilter" class="org.springframework.security.web.authentication.www.DigestAuthenticationFilter">
-		<beans:property name="userDetailsService" ref="myUserDetailsService" />
-		<beans:property name="authenticationEntryPoint" ref="digestEntryPoint" />
-	</beans:bean>
-
-	<beans:bean id="digestEntryPoint" class="org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint">
-		<beans:property name="realmName" value="Contacts Realm via Digest Authentication" />
-		<beans:property name="key" value="acegi" />
-	</beans:bean>
-
-	<authentication-manager erase-credentials="false">
-		<authentication-provider user-service-ref="myUserDetailsService" />
-	</authentication-manager>
-
-</beans:beans>
-
- -->
+    <security:authentication-manager>
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="admin" password="admin" authorities="ROLE_REST"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+    
+</beans>
