@@ -1,13 +1,13 @@
 package es.curso.demo.web.jackson;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,16 +30,18 @@ public class CursoJacksonController {
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public List<Curso> list(final Curso curso) {
-        return cursoService.findByCurso(curso);
+    public Object search(final Curso curso) {
+        return curso.isTotal() ? cursoService.findTotalByCurso(curso) : cursoService.findByCurso(curso);
     }
 
+    @Secured("ROLE_REST")
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Curso getById(@PathVariable final Long id) {
         return cursoService.findById(id);
     }
 
+    @Secured("ROLE_REST")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public Curso create(@RequestBody @Valid final Curso curso, final BindingResult results) throws IOException {
@@ -51,6 +53,7 @@ public class CursoJacksonController {
         return curso;
     }
 
+    @Secured("ROLE_REST")
     @RequestMapping(value = "{id}", method = { RequestMethod.PUT, RequestMethod.POST }, produces = "application/json")
     @ResponseBody
     public Curso update(@PathVariable final Long id, @RequestBody @Valid final Curso curso, final BindingResult results)
@@ -64,6 +67,7 @@ public class CursoJacksonController {
         return curso;
     }
 
+    @Secured("ROLE_REST")
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public String delete(@PathVariable final Long id) {
