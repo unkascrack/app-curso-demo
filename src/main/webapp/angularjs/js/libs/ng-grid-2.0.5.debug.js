@@ -1137,7 +1137,7 @@ var ngEventProvider = function (grid, $scope, domUtilityService, $timeout) {
 
 var ngFooter = function ($scope, grid) {
     $scope.maxRows = function () {
-        var ret = Math.max(grid.config.totalServerItems, grid.data.length);
+        var ret = Math.max($scope.totalServerItems, grid.data.length);
         return ret;
     };
     
@@ -1149,7 +1149,7 @@ var ngFooter = function ($scope, grid) {
 
     $scope.pageForward = function() {
         var page = $scope.pagingOptions.currentPage;
-        if (grid.config.totalServerItems > 0) {
+        if ($scope.totalServerItems > 0) {
             $scope.pagingOptions.currentPage = Math.min(page + 1, $scope.maxPages());
         } else {
             $scope.pagingOptions.currentPage++;
@@ -1173,7 +1173,7 @@ var ngFooter = function ($scope, grid) {
     $scope.cantPageForward = function() {
         var curPage = $scope.pagingOptions.currentPage;
         var maxPages = $scope.maxPages();
-        if (grid.config.totalServerItems > 0) {
+        if ($scope.totalServerItems > 0) {
             return !(curPage < maxPages);
         } else {
             return grid.data.length < 1;
@@ -1181,7 +1181,7 @@ var ngFooter = function ($scope, grid) {
 
     };
     $scope.cantPageToLast = function() {
-        if (grid.config.totalServerItems > 0) {
+        if ($scope.totalServerItems > 0) {
             return $scope.cantPageForward();
         } else {
             return true;
@@ -2849,6 +2849,24 @@ ngGridDirectives.directive('ngGrid', ['$compile', '$filter', '$templateCache', '
                         } else {
     						grid.buildColumns();
     					}
+                        
+                                                // Watch totalServerItems if it's a string
+                                                if (typeof options.totalServerItems == "string") {
+                                                    $scope.$parent.$watch(options.totalServerItems, function (newTotal, oldTotal) {
+                                                        // If the newTotal is not defined (like during init, set the value to 1)
+                                                        if (!angular.isDefined(newTotal)) {
+                                                            $scope.totalServerItems = 1;
+                                                        }
+                                                        // Otherwise set the value to the new total
+                                                        else {
+                                                            $scope.totalServerItems = newTotal;
+                                                        }
+                                                    });
+                                                }
+                                                // If it's NOT a string, then just set totalServerItems to its value
+                                                else {
+                                                    $scope.totalServerItems = options.totalServerItems;
+                                                } 
     					
                         // if it is a string we can watch for data changes. otherwise you won't be able to update the grid data
                         if (typeof options.data == "string") {
