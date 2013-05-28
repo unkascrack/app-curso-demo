@@ -15,6 +15,10 @@ public abstract class FiltroBusqueda implements Serializable {
 
     @JsonIgnore
     @JSON(include = false)
+    private boolean total = false;
+
+    @JsonIgnore
+    @JSON(include = false)
     private Integer page;
 
     @JsonIgnore
@@ -34,6 +38,14 @@ public abstract class FiltroBusqueda implements Serializable {
      */
     @JSON(include = false)
     abstract Map<String, String> getAttrToColumnConversion();
+
+    public boolean isTotal() {
+        return total;
+    }
+
+    public void setTotal(final boolean total) {
+        this.total = total;
+    }
 
     public Integer getPage() {
         return page;
