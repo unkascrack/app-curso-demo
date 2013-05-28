@@ -61,23 +61,20 @@
 			QUERY2.*
 		FROM
 			(SELECT
-				<if test="pageSize != null">
-					/* FIRST_ROWS(${pageSize}) */
-				</if>
 				ROWNUM RNUM, 
 				QUERY1.*
 			FROM
 				(
 					SELECT  
-						CURSO.ID_CURSO,
-						CURSO.LG_ACTIVO,
-						CURSO.DE_TITULO,
-						CURSO.DE_NIVEL,
-						CURSO.NU_HORAS,
-						CURSO.DE_TEMARIO,
-						CURSO.ID_TUTOR
+						ID_CURSO,
+						LG_ACTIVO,
+						DE_TITULO,
+						DE_NIVEL,
+						NU_HORAS,
+						DE_TEMARIO,
+						ID_TUTOR
 					FROM 
-						TBG_CURSO CURSO
+						TBG_CURSO
 					<where>
 						<if test="activo != null">
 							AND LG_ACTIVO = #{activo}
