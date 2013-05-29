@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.curso.demo.model.Tutor;
 import es.curso.demo.service.TutorService;
 
-@RequestMapping("/secured/jackson/tutores")
+@RequestMapping("/jackson/tutores")
 @Controller
 public class TutorJacksonController {
 
