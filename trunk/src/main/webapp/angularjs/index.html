@@ -1,5 +1,8 @@
-<!DOCTYPE html>
-<html lang="es" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="myApp" ng-controller="RootController">
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ng-app: myApp;" lang="en" ng-controller="RootController"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ng-app: myApp;" lang="en" ng-controller="RootController"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ng-app: myApp;" lang="en" ng-controller="RootController"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js ng-app: myApp;" lang="en" ng-controller="RootController"> <!--<![endif]-->
 <head>
 	<meta charset="utf-8">
 	<title>Demo - Catálogo de Cursos</title>
@@ -9,6 +12,8 @@
 	<link rel="stylesheet" href="css/ng-grid.css">
 	 <!--[if lte IE 8]>
 	<script src="js/libs/json2.js"></script>
+	<![endif]-->
+	 <!--[if lte IE 8]>
 	<script>
 		document.createElement('ng-include');
 		document.createElement('ng:include');
