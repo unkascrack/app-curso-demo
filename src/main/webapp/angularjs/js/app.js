@@ -25,3 +25,7 @@ function trim(data) {
 	}
 	return data;
 }
+
+function getTimestamp() {
+	return new Date().getTime();
+}

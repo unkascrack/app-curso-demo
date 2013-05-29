@@ -18,7 +18,9 @@ app.controller('RootController', ['$scope', '$location', function($scope, $locat
 }]);
 
 app.controller('ListCursoController', ['$scope', 'CursoResource', function($scope, CursoResource) {
-	$scope.cursos = CursoResource.query();
+
+	$scope.cursos = CursoResource.query({t:getTimestamp()});
+	
     $scope.gridOptions2 = {
         data: 'cursos',
         columnDefs: [{field:'activo', displayName:'Activo', sortable:false}, {field:'titulo', displayName:'Título'}, {field:'nivel', displayName:'Nivel'}, {field:'horas', displayName:'Horas'}, {field:'temario', displayName:'Temario'}],
@@ -67,9 +69,10 @@ app.controller('ListCursoController', ['$scope', 'CursoResource', function($scop
     function searchNuDataAsync(filter, callback) {
         setTimeout(function () {
         	var params = {};
+        	params.t = getTimestamp();
         	params.activo = filter.activo;
         	params.titulo = filter.titulo;
-	        CursoResource.total(trim($scope.filterOptions), function success(data) {
+	        CursoResource.total(trim(params), function success(data) {
 	        	var total = parseInt(data[0]);
 	        	$scope.totalServerItems = total;
 	        	if (callback !== null) {
@@ -82,6 +85,7 @@ app.controller('ListCursoController', ['$scope', 'CursoResource', function($scop
     function searchDataAsync(filter, pageSize, page, orderBy, orderSort) {
         setTimeout(function () {
         	var params = {};
+        	params.t = getTimestamp();
         	params.activo = filter.activo;
         	params.titulo = filter.titulo;
         	params.pageSize = pageSize;
