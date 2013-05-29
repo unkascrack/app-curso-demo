@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" ng-app="myApp" ng-controller="RootController">
+<html lang="es" xmlns:ng="http://angularjs.org" id="ng-app" ng-app="myApp" ng-controller="RootController">
 <head>
 	<meta charset="utf-8">
 	<title>Demo - Catálogo de Cursos</title>
@@ -7,11 +7,26 @@
 	<link rel="stylesheet" href="../css/style.css">
 	<link rel="stylesheet" href="../css/jquery-ui-1.10.3.custom.min.css">
 	<link rel="stylesheet" href="css/ng-grid.css">
+	 <!--[if lte IE 8]>
+	<script src="js/libs/json2.js"></script>
+	<script>
+		document.createElement('ng-include');
+		document.createElement('ng:include');
+		
+		document.createElement('ng-view');
+		document.createElement('ng:view');
+		
+		document.createElement('ng-grid');
+		document.createElement('ng:grid');
+		
+		document.createElement('ng-scope');
+		document.createElement('ng:scope');
+	</script>
+	<![endif]-->
 </head>
 <body>
-	<div loading>Loading...</div>
 
-	<ng-include src="'templates/header.html'"></ng-include>
+	<div ng-include="'templates/header.html'"></div>
 	
 	<div ng-view></div>
 

@@ -18,6 +18,13 @@ app.controller('RootController', ['$scope', '$location', function($scope, $locat
 }]);
 
 app.controller('ListCursoController', ['$scope', 'CursoResource', function($scope, CursoResource) {
+	$scope.cursos = CursoResource.query();
+    $scope.gridOptions2 = {
+        data: 'cursos',
+        columnDefs: [{field:'activo', displayName:'Activo', sortable:false}, {field:'titulo', displayName:'Título'}, {field:'nivel', displayName:'Nivel'}, {field:'horas', displayName:'Horas'}, {field:'temario', displayName:'Temario'}],
+        i18n: 'sp'
+    };
+	
     $scope.pagingOptions = {
         pageSizes: [2, 5, 10],
         pageSize: 2,

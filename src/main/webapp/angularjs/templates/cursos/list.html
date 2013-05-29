@@ -1,27 +1,24 @@
 <h2>LISTADO DE CURSOS</h2>
 
 <div>
-	<a ng-href='#/cursos/new'>Nuevo</a>
+	<a ng-href="#/cursos/new">Nuevo</a>
 </div>
 
-<center ng-controller='ListCursoController'>
+<center ng-controller="ListCursoController">
 
-	<p>
+<!-- 	<p>
 	Activo: <select ng-model="activo" ng-options="a.id as a.nombre for a in [{id:true,nombre:'SI'}, {id:false,nombre:'NO'}]"><option></option></select> 
 	Titulo: <input type="text" ng-model="titulo">
 	<button ng-click="filtrar(activo, titulo)">Filtrar</button>
-	</p>
+	</p> -->
 
-<!-- 	
-	<div ng-show="!myData || myData.length == 0">
-		No se ha encontrado ningún curso
-	</div>
-	<div class="gridStyle" ng-grid="gridOptions" ng-show="myData.length > 0"></div>
--->
-	
+	GRIDOPTIONS:	
 	<div class="gridStyle" ng-grid="gridOptions"></div>
 	
-<!-- 
+	GRIDOPTIONS2:
+	<div class="gridStyle" ng-grid="gridOptions2"></div>
+ 
+ 	LIST:
 	<table border="1" cellspacing="0" cellpadding="5" width="80%">
 		<thead>
 			<tr>
@@ -29,32 +26,31 @@
 					<a href="" ng-click="predicate = 'titulo'; reverse=!reverse">Título</a>
 				</th>
 				<th width="100">
-					<a href="#">Nivel</a>
+					Nivel
 				<th width="50">
-					<a href="#">Horas</a>
+					Horas
 				<th width="50">Temario</th>
 				<th width="50"></th>
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-show='!cursos.length'>
+			<tr ng-show="!cursos.length">
 				<td colspan="5" align="center">No hay ningún curso activo</td>
 			</tr>
-			<tr ng-repeat='curso in cursos | orderBy:predicate:reverse'>
-				<td ng-bind='curso.titulo'></td>
-				<td ng-bind='curso.nivel'></td>
+			<tr ng-repeat="curso in cursos | orderBy:predicate:reverse">
+				<td ng-bind="curso.titulo"></td>
+				<td ng-bind="curso.nivel"></td>
 				<td>{{curso.horas}}</td>
 				<td align="center">
-					<a ng-show='curso.temario != null' ng-href='../docs/{{curso.id}}/{{curso.temario}}' target='_blank'>
+					<a ng-show="curso.temario != null" ng-href="../docs/{{curso.id}}/{{curso.temario}}" target="_blank">
 						Descargar
 					</a>
 				</td>
 				<td align="center">
-					<a ng-href='#/cursos/{{curso.id}}'>Consultar</a> |
-					<a ng-href='#/cursos/{{curso.id}}/edit'>Editar</a>
+					<a ng-href="#/cursos/{{curso.id}}">Consultar</a> |
+					<a ng-href="#/cursos/{{curso.id}}/edit">Editar</a>
 				</td>
 			</tr>
 		</tbody>
 	</table>
--->
 </center>

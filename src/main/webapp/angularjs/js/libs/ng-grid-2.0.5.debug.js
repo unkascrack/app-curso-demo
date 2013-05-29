@@ -1531,7 +1531,7 @@ var ngGrid = function ($scope, options, sortService, domUtilityService, $filter,
                     groupable: false,
                     headerCellTemplate: $templateCache.get($scope.gridId + 'checkboxHeaderTemplate.html'),
                     cellTemplate: $templateCache.get($scope.gridId + 'checkboxCellTemplate.html'),
-                    pinned: self.config.pinSelectionCheckbox,
+                    pinned: self.config.pinSelectionCheckbox
                 },
                 index: 0,
                 headerRowHeight: self.config.headerRowHeight,
@@ -2334,8 +2334,7 @@ var ngRowFactory = function (grid, $scope, domUtilityService, $templateCache, $u
                     },
                     enablePinning: grid.config.enablePinning,
                     isAggCol: true,
-                    headerRowHeight: grid.config.headerRowHeight,
-                    
+                    headerRowHeight: grid.config.headerRowHeight
                 }, $scope, grid, domUtilityService, $templateCache, $utils));
             }
         }
