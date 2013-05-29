@@ -7,6 +7,8 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import es.curso.demo.model.Curso;
 import es.curso.demo.service.CursoService;
 
-@RequestMapping("/secured/jackson/cursos")
+@RequestMapping("/jackson/secured/cursos")
 @Controller
 public class CursoJacksonController {
 
@@ -36,8 +38,10 @@ public class CursoJacksonController {
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Curso getById(@PathVariable final Long id) {
-        return cursoService.findById(id);
+    public ResponseEntity<Curso> getById(@PathVariable final Long id) {
+        final Curso curso = cursoService.findById(id);
+        final HttpStatus httpStatus = curso != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return new ResponseEntity<Curso>(curso, httpStatus);
     }
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")

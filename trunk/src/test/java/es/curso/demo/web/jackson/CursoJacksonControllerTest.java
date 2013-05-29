@@ -9,6 +9,8 @@ import org.easymock.EasyMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.validation.BindingResult;
@@ -46,21 +48,23 @@ public class CursoJacksonControllerTest {
 
     @Test
     public void testGetByIdNull() {
-        final Curso curso = controller.getById(null);
-        Assert.assertNull(curso);
+        final ResponseEntity<Curso> response = controller.getById(null);
+        Assert.assertNull(response.getBody());
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void testGetByIdNotFound() {
-        final Curso curso = controller.getById(-1l);
-        Assert.assertNull(curso);
+        final ResponseEntity<Curso> response = controller.getById(-1l);
+        Assert.assertNull(response.getBody());
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
     @Test
     public void testGetByIdFound() {
-        final Curso curso = controller.getById(1l);
-        Assert.assertNotNull(curso);
-        Assert.assertTrue(curso.getId().equals(1l));
+        final ResponseEntity<Curso> response = controller.getById(1l);
+        Assert.assertNotNull(response.getBody());
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.OK);
     }
 
     @Test(expected = Exception.class)
