@@ -60,11 +60,13 @@
 		// ROUTES 
 		app.config(['$routeProvider', function($routeProvider) {
 			$routeProvider
+				.when('/login', {templateUrl:'templates/login.html'})
+				.when('/400', {templateUrl:'templates/error400.html'})
+				.when('/500', {templateUrl:'templates/error500.html'})
 				.when('/cursos', {templateUrl:'templates/cursos/list.html'})
 				.when('/cursos/new', {controller: 'NewCursoController', templateUrl:'templates/cursos/edit.html'})
 				.when('/cursos/:id', {templateUrl:'templates/cursos/show.html'})
 				.when('/cursos/:id/edit', {controller: 'EditCursoController', templateUrl:'templates/cursos/edit.html'})
-				.when('/404', {templateUrl:'templates/error404.html'})
 				.otherwise({redirectTo: '/cursos'});
 		}]);
 	</script>
@@ -135,20 +137,18 @@
 			$httpProvider.responseInterceptors.push('errorHttpInterceptor');
 		}]);
 		
-		services.factory('errorHttpInterceptor', ['$q', '$location', 'ErrorService', '$rootScope', 
-			function ($q, $location, ErrorService, $rootScope) {
+		services.factory('errorHttpInterceptor', ['$q', '$location', '$rootScope', 
+			function ($q, $location, $rootScope) {
 				return function (promise) {
 					return promise.then(function (response) {
 						return response;
 					}, function (response) {
 						if (response.status === 401) {
 							$rootScope.$broadcast('event:loginRequired');
-						} else if (response.status === 404) {
-							$rootScope.$broadcast('event:notFound');
 						} else if (response.status >= 400 && response.status < 500) {
-							ErrorService.setError('Server was unable to find what you were looking for!!');
+							$rootScope.$broadcast('event:resourceNotFound');
 						} else if (response.status >= 500) {
-							ErrorService.setError('Server error!!');
+							$rootScope.$broadcast('event:internalServerError');
 						}
 						return $q.reject(response);
 					});
@@ -164,40 +164,27 @@
 		services.factory('TutorResource', ['$resource', function($resource) {
 			return $resource(getURLEscaped() + 'rest/jackson/tutores/:id', {id: '@id'});
 		}]);
-		
-		services.factory('ErrorService', function() {
-			return {
-				errorMessage: null,
-				setError: function(msg) {
-					this.errorMessage = msg;
-				},
-				clear: function() {
-					this.errorMessage = null;
-				}
-			};
-		});
 	</script>
 		
 	<script type="text/javascript">
 		// CONTROLLERS
 		
 		// TODO: lista de cosas faltan por realizar
-		//  - interceptor capture errores 401 (unauthorized), 404 (not found)
-		//  - si al buscar un elemento por su id no se encuentra se debe devolver error 404
 		//  - revisar las búsquedas de listados el orden podría ser datos de página y si llegamos a datosPagina.length = pageSize entonces buscar el total
 		//  - construir una clase javascript comun que gestione todos los controles de los grid
 		//  - sistema de autenticación
 		
 		
-		app.controller('RootController', ['$scope', '$location', 'ErrorService', function($scope, $location, ErrorService) {
-			$scope.errorService = ErrorService;
-			
+		app.controller('RootController', ['$scope', '$location', function($scope, $location) {
 			$scope.$on('event:loginRequired', function() {
-				console.log('login required')
+				console.log('login required');
 				$location.path('/login');
 			});
-			$scope.$on('event:notFound', function() {
-				$location.path('/404');
+			$scope.$on('event:resourceNotFound', function() {
+				$location.path('/400');
+			});
+			$scope.$on('event:internalServerError', function() {
+				$location.path('/500');
 			});
 		}]);
 		
