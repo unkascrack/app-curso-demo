@@ -176,8 +176,7 @@ app.controller('EditCursoController', ['$scope', '$location', '$routeParams', 'C
 				alert('error');
 			});
 	$scope.save = function() {
-		$scope.curso.$update(function(curso) {
-			alert(curso.id);
+		$scope.curso.$save(function(curso) {
 			$location.path('/cursos');
 		});
 	};
