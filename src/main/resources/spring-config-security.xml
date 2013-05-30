@@ -9,17 +9,19 @@
                         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
                         http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-	<security:global-method-security secured-annotations="enabled"/>
 
-    <security:http entry-point-ref="restAuthenticationEntryPoint" pattern="/rest/jackson/secured/**" create-session="stateless" auto-config="false">
+	<!-- secured-annotations = (@Secured("ROLE_ADMIN")) -->
+	<!-- jsr250-annotations = (@RunAs @RolesAllowed @PermitAll @DenyAll @DeclareRoles) -->
+	<!-- pre-post-annotations = @PreAuthorized("hasAuthority('ROLE_ADMIN')") -->
+	<security:global-method-security secured-annotations="enabled" jsr250-annotations="enabled"/>
+
+    <security:http entry-point-ref="restAuthenticationEntryPoint" pattern="/**/secured/**" create-session="stateless" auto-config="false">
         <security:custom-filter ref="authenticationTokenProcessingFilter" position="FORM_LOGIN_FILTER" />
         
-        <security:intercept-url pattern="**" access="ROLE_REST"/>
-        <!-- 
         <security:intercept-url pattern="**" access="ROLE_REST" method="POST"/>
         <security:intercept-url pattern="**" access="ROLE_REST" method="PUT"/>
         <security:intercept-url pattern="**" access="ROLE_REST" method="DELETE"/>
-        
+        <!--
         <security:logout invalidate-session="true" delete-cookies="JSESSIONID"/>
          -->
     </security:http>
