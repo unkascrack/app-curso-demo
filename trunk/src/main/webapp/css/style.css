@@ -13,6 +13,6 @@ html, body {
 
 .gridStyle {
     border: 1px solid rgb(212,212,212);
-    width: 100%; 
+    /*width: 100%;*/ 
     height: 300px
 }
