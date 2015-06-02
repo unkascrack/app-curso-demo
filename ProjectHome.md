@@ -1,0 +1,1 @@
+Aplicación demo para la gestión de un catalogo de cursos
